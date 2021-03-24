@@ -70,18 +70,79 @@ def test_get_random_position():
 
 def convert_frag_seq():
     seq = Seq("MKQH")
-    expected = np.array(['m','k','q','h'])
+    expected = np.array(['m', 'k', 'q', 'h', '-'])
     actual = sampling.convert_frag_seq(seq)
     np.testing.assert_array_equal(actual, expected)
 
 
 def test_fragment_is_valid__success():
-    seq = np.array(['a','a','c','t','g'])
-    assert sampling.sequence_is_valid(seq)
+    frag = np.array(['a', 'a', 'c', 't', 'g'])
+    assert sampling.fragment_is_valid(frag)
 
 
 def test_fragment_is_valid__failure():
-    seq = np.array(['a','a','c','t','h'])
-    assert sampling.sequence_is_valid(seq) is False
+    frag = np.array(['a', 'a', 'c', 't', 'h'])
+    assert sampling.fragment_is_valid(frag) is False
 
 
+def test_update_frag_array__valid():
+    frag = np.array(['a', 'c', 't', 'g', '-'])
+    charar = np.chararray((3, 5))
+    charar[:] = '-'
+    is_valid = True
+    i = 1
+    expected = np.array([['-', '-', '-', '-', '-'],
+                         ['a', 'c', 't', 'g', 'v'],
+                         ['-', '-', '-', '-', '-']], dtype='|S1')
+    actual = sampling.update_frag_array(frag, charar, is_valid, i)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_update_frag_array__invalid():
+    frag = np.array(['a', 'c', 't', 'g', '-'])
+    charar = np.chararray((3, 5))
+    charar[:] = '-'
+    is_valid = False
+    i = 1
+    expected = np.array([['-', '-', '-', '-', '-'],
+                         ['a', 'c', 't', 'g', 'i'],
+                         ['-', '-', '-', '-', '-']], dtype='|S1')
+    actual = sampling.update_frag_array(frag, charar, is_valid, i)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_get_valid_rows__one_row():
+    charar = np.array([['-', '-', '-', '-', '-'],
+                       ['a', 'c', 't', 'g', 'i'],
+                       ['a', 'g', 't', 'g', 'v']], dtype='|S1')
+    expected = np.array([[2]])
+    actual = sampling.get_valid_rows(charar)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_get_valid_rows__muliple_rows():
+    charar = np.array([['-', '-', '-', '-', 'i'],
+                       ['a', 'c', 't', 'g', 'v'],
+                       ['a', 'g', 't', 'g', 'v']], dtype='|S1')
+    expected = np.array([[1, 2]])
+    actual = sampling.get_valid_rows(charar)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_remove_invalid_frags__one_row_left():
+    charar = np.array([['-', '-', '-', '-', 'i'],
+                       ['a', 'c', 't', 'g', 'i'],
+                       ['a', 'g', 't', 'g', 'v']], dtype='|S1')
+    expected = np.array([['a', 'g', 't', 'g']], dtype='|S1')
+    actual = sampling.remove_invalid_frags(charar)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_remove_invalid_frags__multiple_rows_left():
+    charar = np.array([['-', '-', '-', '-', 'i'],
+                       ['a', 'c', 't', 'g', 'v'],
+                       ['a', 'g', 't', 'g', 'v']], dtype='|S1')
+    expected = np.array([['a', 'c', 't', 'g'],
+                         ['a', 'g', 't', 'g']], dtype='|S1')
+    actual = sampling.remove_invalid_frags(charar)
+    np.testing.assert_array_equal(actual, expected)

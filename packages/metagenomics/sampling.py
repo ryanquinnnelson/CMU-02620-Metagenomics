@@ -66,7 +66,8 @@ def get_random_position(seq_length, sample_length):
 # tested
 def convert_frag_seq(seq):
     """
-    Converts sequence to lowercase numpy character array.
+    Converts sequence to lowercase numpy character array, adding a column to the end of the sequence for the
+    validation flag.
     Todo - Determine if there is a faster way to do this.
 
     :param seq: Seq
@@ -74,33 +75,79 @@ def convert_frag_seq(seq):
     """
     seq_lower = seq.lower
     split_seq = seq_lower.split()
-    charar = np.array([split_seq])
+    charar = np.array([split_seq, '-'])  # add column to end
     return charar
 
 
+# tested
 def fragment_is_valid(frag):
     allowed = ['a', 'c', 't', 'g']
     return all(c in allowed for c in frag)
 
 
+# tested
 def update_frag_array(frag, charar, is_valid, i):
-    # convert fragment into character array
+    """
+    Replaces ith row of character array with fragment and sets validation flag according to validity of fragment.
+    If fragment is valid, sets last column of ith row to 'v'.
+    If fragment is invalid, sets last column of ith row to 'i'.
 
-    # replace ith row of array with fragment
-    return None
+    :param frag:
+    :param charar:
+    :param is_valid:
+    :param i:
+    :return:
+    """
+    # replace ith row with frag
+    charar[i] = frag
+
+    # set validation flag
+    j = charar.shape[1] - 1  # last column
+    if is_valid:
+        charar[i][j] = 'v'
+    else:
+        charar[i][j] = 'i'
+
+    return charar
 
 
+# tested
+def get_valid_rows(charar):
+    """
+    Determines which rows in the character array are invalid.
+    Assumes invalid rows are marked by 'i' in their last column.
+
+    :param charar: character array to check
+    :return: array of invalid rows
+    """
+    n_cols = charar.shape[1]
+    return np.where(charar[:, n_cols - 1] == b'v')
 
 
+# tested
+def remove_invalid_frags(charar):
+    """
+    Removes invalid rows from fragment array and removes validation flag column.
 
-def remove_invalid_frags(frag_array):
-    return None
+    :param charar: n x m matrix, where
+    :return: (n - i) x (m - 1) matrix, where i is the number of invalid fragments
+    """
+    # get list of invalid rows
+    valid = get_valid_rows(charar)
+    charar = charar[valid]
+
+    # remove validation flag column
+    last_col = charar.shape[1] - 1
+    charar = np.delete(charar, last_col, axis=1)
+
+    return charar
 
 
 # based on code from paper
 def draw_fragments(seq_record, sample_length, coverage):
     """
     Assumes sequence is at least as long as than sample_length.
+    Todo - Replace invalid samples with valid samples.
 
     :param seq_record: sequence to be sampled, expecting Bio.SeqRecord.SeqRecord
     :param sample_length: int, length of fragments to be drawn
@@ -133,30 +180,6 @@ def draw_fragments(seq_record, sample_length, coverage):
 
     return frag_array
 
-#
-# # # draw fragments if sequence is valid
-# # if sequence_is_valid(lowercase_seq):
-# #
-# # else:
-# #     print('Sequence {} is invalid.'.format(seq_record.id))
-#
-#
-# def write_fragments_to_file(fragments, filename):
-#     pass
-#
-#
-# # tested
-# def sequence_is_valid(sequence):
-#     """
-#     Checks whether sequence contains characters other than {a,c,t,g}.
-#     Todo - make this more efficient
-#
-#     :param sequence: Expecting Bio.Seq.Seq with lowercase letters only.
-#     :return: True if sequence only contains expected nucleotides, false otherwise.
-#     """
-#     allowed = ['a', 'c', 't', 'g']
-#     return all(c in allowed for c in sequence)
-#
 #
 # def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
 #     """
