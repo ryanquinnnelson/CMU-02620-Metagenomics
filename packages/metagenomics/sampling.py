@@ -64,18 +64,19 @@ def get_random_position(seq_length, sample_length):
 
 
 # tested
-def convert_frag_seq(seq):
+def convert_frag_seq(frag_seq):
     """
     Converts sequence to lowercase numpy character array, adding a column to the end of the sequence for the
     validation flag.
     Todo - Determine if there is a faster way to do this.
 
-    :param seq: Seq
+    :param frag_seq: Seq
     :return: m x 1 vector, character array of sequence
     """
-    seq_lower = seq.lower
-    split_seq = seq_lower.split()
-    charar = np.array([split_seq, '-'])  # add column to end
+
+    seq_lower = frag_seq.lower()
+    split_seq = list(seq_lower) + ['-']  # add column to end
+    charar = np.array([split_seq], dtype='|S1')
     return charar
 
 

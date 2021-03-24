@@ -146,3 +146,13 @@ def test_remove_invalid_frags__multiple_rows_left():
                          ['a', 'g', 't', 'g']], dtype='|S1')
     actual = sampling.remove_invalid_frags(charar)
     np.testing.assert_array_equal(actual, expected)
+
+
+def test_draw_fragments():
+    record = SeqRecord(
+        Seq("actgCtgatGtctactgtac"),
+        id="YP_025292.1")
+    sample_length = 5
+    coverage = 1
+
+    actual = sampling.draw_fragments(record, sample_length, coverage)
