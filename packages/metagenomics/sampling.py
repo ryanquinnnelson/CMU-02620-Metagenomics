@@ -20,14 +20,17 @@ def write_fragments_to_file(fragments, filename):
     pass
 
 
+# tested
 def sequence_is_valid(sequence):
     """
-    Checks whether sequence contains characters other than {A,C,T,G}.
+    Checks whether sequence contains characters other than {a,c,t,g}.
+    Todo - make this more efficient
 
-    :param sequence:
+    :param sequence: Expecting Bio.Seq.Seq with lowercase letters only.
     :return: True if sequence only contains expected nucleotides, false otherwise.
     """
-    return True
+    allowed = ['a', 'c', 't', 'g']
+    return all(c in allowed for c in sequence)
 
 
 def build_fragments(input_file, output_file, L, coverage, random_seed=0):
@@ -42,10 +45,11 @@ def build_fragments(input_file, output_file, L, coverage, random_seed=0):
     """
 
     # for each sequence, draw fragments as needed
-    for i, seq_record in enumerate(SeqIO.parse(input_file, "fasta")):
+    for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
         print('Building fragments for sequence {}...'.format(i))
-        if sequence_is_valid(seq_record):
-            fragments = draw_fragments(seq_record, L, coverage, random_seed)
+        lowercase_seq = seq_record.seq.lower
+        if sequence_is_valid(lowercase_seq):
+            fragments = draw_fragments(lowercase_seq, L, coverage, random_seed)
             write_fragments_to_file(fragments, output_file)
         else:
             print('Sequence {} is invalid.'.format(seq_record.id))
