@@ -20,11 +20,21 @@ def write_fragments_to_file(fragments, filename):
     pass
 
 
+def sequence_is_valid(sequence):
+    """
+    Checks whether sequence contains characters other than {A,C,T,G}.
+
+    :param sequence:
+    :return: True if sequence only contains expected nucleotides, false otherwise.
+    """
+    return True
+
+
 def build_fragments(input_file, output_file, L, coverage, random_seed=0):
     """
 
     :param input_file: File in which sequences are stored. .fasta format expected.
-    :param output_file: 
+    :param output_file:
     :param L:
     :param coverage:
     :param random_seed:
@@ -32,6 +42,10 @@ def build_fragments(input_file, output_file, L, coverage, random_seed=0):
     """
 
     # for each sequence, draw fragments as needed
-    for sequence in SeqIO.parse(input_file, "fasta"):
-        fragments = draw_fragments(sequence, L, coverage, random_seed=0)
-        write_fragments_to_file(fragments, output_file)
+    for i, seq_record in enumerate(SeqIO.parse(input_file, "fasta")):
+        print('Building fragments for sequence {}...'.format(i))
+        if sequence_is_valid(seq_record):
+            fragments = draw_fragments(seq_record, L, coverage, random_seed)
+            write_fragments_to_file(fragments, output_file)
+        else:
+            print('Sequence {} is invalid.'.format(seq_record.id))
