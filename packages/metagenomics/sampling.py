@@ -13,6 +13,9 @@ def _calc_number_fragments(seq_length, coverage, sample_length):
     Calculates the number of fragments to be randomly sampled from the given sequence in order to
     achieve desired coverage. Uses formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
 
+    Todo - consider revising to always round up. If fractional portion is required to cover sequence, then one
+       additional fragment can only improve coverage. In contrast, rounding down means expected coverage is not met.
+
     :param seq_length: int, length of sequence to be sampled
     :param coverage: float, desired coverage
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
