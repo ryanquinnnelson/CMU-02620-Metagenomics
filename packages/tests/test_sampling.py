@@ -65,7 +65,7 @@ def test__build_fragment_array__valid_sequence():
     sample_length = 5
     n_frag = 4
 
-    actual = sampling._build_fragment_array(seq, sample_length, n_frag)
+    actual = sampling._draw_fragments(seq, sample_length, n_frag)
 
     # check number of fragments
     assert len(actual) == n_frag
@@ -81,7 +81,7 @@ def test__build_fragment_array__invalid_sequence():
     sample_length = 5
     n_frag = 4
 
-    actual = sampling._build_fragment_array(seq, sample_length, n_frag)
+    actual = sampling._draw_fragments(seq, sample_length, n_frag)
 
     # check number of fragments
     assert len(actual) == n_frag
@@ -95,7 +95,7 @@ def test__build_fragment_array__infinite_loop():
     sample_length = 5
     n_frag = 4
     with pytest.raises(ValueError):
-        sampling._build_fragment_array(seq, sample_length, n_frag)
+        sampling._draw_fragments(seq, sample_length, n_frag)
 
 
 def test__draw_fragments_for_sequence():
@@ -103,7 +103,7 @@ def test__draw_fragments_for_sequence():
     sample_length = 5
     coverage = 1
 
-    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage)
+    actual = sampling._build_fragment_array(seq, sample_length, coverage)
 
     # check number of fragments
     assert len(actual) == 4
@@ -119,7 +119,7 @@ def test__draw_fragments_for_sequence__seq_too_short():
     sample_length = 5
     coverage = 1
 
-    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage)
+    actual = sampling._build_fragment_array(seq, sample_length, coverage)
 
     # check number of fragments
     assert len(actual) == 0
@@ -138,7 +138,7 @@ def test__build_fragment_rows_for_sequence():
     taxid = 'NC_013451'
     expected = np.array([[b'NC_013451', b'atcg'],
                          [b'NC_013451', b'gtcc']])
-    actual = sampling._build_fragment_rows_for_sequence(fragments, taxid)
+    actual = sampling._combine_fragments_and_taxid_for_sequence(fragments, taxid)
     np.testing.assert_array_equal(actual, expected)
 
 
@@ -164,7 +164,7 @@ def test_draw_fragments__output_directory_exists(tmp_path):
     coverage = 1
 
     with pytest.raises(ValueError):
-        sampling._draw_fragments_2(seq_file, taxid_file, output_dir, sample_length, coverage)
+        sampling.generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage)
 
 
 
@@ -189,7 +189,7 @@ def test_draw_fragments__output_directory_does_not_exist(tmp_path):
     coverage = 1
 
     # run function
-    sampling._draw_fragments_2(seq_file, taxid_file, output_dir, sample_length, coverage)
+    sampling.generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage)
 
     # read in written file
     output_file = output_dir / 'fragments-00000.npy'
