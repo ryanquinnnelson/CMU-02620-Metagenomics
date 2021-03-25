@@ -5,23 +5,23 @@ import numpy as np
 import pytest
 
 
-def test_split_record():
-    record = SeqRecord(
-        Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF"),
-        id="YP_025292.1",
-        name="HokC",
-        description="toxic membrane protein, small")
-
-    expected_id = "YP_025292.1"
-    expected_seq = Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF")
-    expected_seq_length = 44
-
-    actual_id, actual_seq, actual_seq_length = sampling.split_record(record)
-    assert actual_id == expected_id
-    assert actual_seq == expected_seq
-    assert actual_seq_length == expected_seq_length
-
-
+# def test_split_record():
+#     record = SeqRecord(
+#         Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF"),
+#         id="YP_025292.1",
+#         name="HokC",
+#         description="toxic membrane protein, small")
+#
+#     expected_id = "YP_025292.1"
+#     expected_seq = Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF")
+#     expected_seq_length = 44
+#
+#     actual_id, actual_seq, actual_seq_length = sampling.split_record(record)
+#     assert actual_id == expected_id
+#     assert actual_seq == expected_seq
+#     assert actual_seq_length == expected_seq_length
+#
+#
 def test_calc_number_fragments__whole_number():
     coverage = 0.1
     sample_length = 200
@@ -49,41 +49,32 @@ def test_calc_number_fragments__rounding_down():
     assert actual == expected
 
 
-def test_create_chararray():
-    n_frag = 4
-    sample_length = 5
-    expected = np.chararray((4, 5))
-    expected[:] = '!'
-    actual = sampling.create_chararray(n_frag, sample_length)
-    np.testing.assert_array_equal(actual, expected)
-
-
 def test_get_random_position():
     seq_length = 7
     sample_length = 3
 
     for i in range(1000):
-        actual_start_pos, actual_end_pos = sampling.get_random_position(seq_length, sample_length)
+        actual_start_pos = sampling.get_random_position(seq_length, sample_length)
 
         assert 0 <= actual_start_pos <= 4
-        assert 3 <= actual_end_pos <= 7
-
-
-def convert_frag_seq():
-    seq = Seq("MKQH")
-    expected = np.array([b'm', b'k', b'q', b'h'], dtype='|S1')
-    actual = sampling.convert_frag_seq(seq)
-    np.testing.assert_array_equal(actual, expected)
 
 
 def test_fragment_is_valid__success():
-    frag = np.array([b'a', b'a', b'c', b't', b'g'], dtype='|S1')
+    frag = 'aactg'
     assert sampling.fragment_is_valid(frag)
 
 
 def test_fragment_is_valid__failure():
-    frag = np.array([b'a', b'a', b'c', b't', b'h'], dtype='|S1')
+    frag = 'aacth'
     assert sampling.fragment_is_valid(frag) is False
+
+
+def test_draw_fragment():
+    seq = Seq("actgCtgatgtctactgtac")  # length of 20
+    sample_length = 5
+    actual = sampling.draw_fragment(seq, sample_length)
+    assert len(actual) == 5
+    assert actual in seq.lower()
 
 
 def test_draw_fragments__valid_sequence():
@@ -98,10 +89,10 @@ def test_draw_fragments__valid_sequence():
     # check number of fragments
     assert len(actual) == expected_n_frag
 
+    # check that all fragments are lowercase and contain only a,c,t,g
+    allowed = ['a', 'c', 't', 'g']
     for frag in actual.tolist():
-        # check that all fragments are lowercase
-        allowed = [b'a', b'c', b't', b'g']
-        assert all(c in allowed for c in frag)
+        assert all(c in allowed for c in frag.decode('utf-8'))
 
 
 def test_draw_fragments__invalid_sequence():
@@ -117,7 +108,7 @@ def test_draw_fragments__invalid_sequence():
     assert len(actual) == expected_n_frag
 
     for frag in actual.tolist():
-        assert b'u' not in frag
+        assert 'u' not in frag.decode('utf-8')
 
 
 def test_draw_fragments__infinite_loop():
@@ -127,3 +118,20 @@ def test_draw_fragments__infinite_loop():
 
     with pytest.raises(ValueError):
         sampling.draw_fragments(seq, sample_length, coverage)
+
+
+def test_build_taxid_array():
+    taxid = 'NC_013451'
+    n_frag = 2
+    expected = np.array([b'NC_013451', b'NC_013451'])
+    actual = sampling.build_taxid_array(n_frag, taxid)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_build_output_rows():
+    fragments = np.array([b'atcg', b'gtcc'])
+    taxid = 'NC_013451'
+    expected = np.array([[b'NC_013451', b'atcg'],
+                         [b'NC_013451', b'gtcc']])
+    actual = sampling.build_output_rows(fragments, taxid)
+    np.testing.assert_array_equal(actual, expected)
