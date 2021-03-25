@@ -120,4 +120,4 @@ def test_draw_fragments__invalid_sequence():
     assert len(actual) == expected_n_frag
 
     for frag in actual.tolist():
-        assert b'u' in frag
+        assert b'u' not in frag
