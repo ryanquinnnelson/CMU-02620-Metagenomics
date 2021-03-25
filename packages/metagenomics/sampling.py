@@ -48,6 +48,7 @@ def _fragment_is_valid(frag):
     return all(c in allowed for c in frag)
 
 
+# tested
 def _draw_fragment(seq, sample_length):
     """
     Draws one fragment sample at random from the given sequence.
@@ -66,6 +67,7 @@ def _draw_fragment(seq, sample_length):
     return str(frag_seq)
 
 
+# tested
 def _draw_fragments(seq, sample_length, n_frag):
     """
     Draws required number of valid fragments from sequence.
@@ -102,6 +104,7 @@ def _draw_fragments(seq, sample_length, n_frag):
     return fragments
 
 
+# tested
 def _build_fragment_array(seq, sample_length, coverage, seed=None):
     """
     Draws number of samples from sequence in order to achieve desired coverage and constructs an array of the results.
@@ -131,6 +134,7 @@ def _build_fragment_array(seq, sample_length, coverage, seed=None):
     return fragments
 
 
+# tested
 def _build_taxid_array(n_frag, taxid):
     """
     Generates an array equal in length to the fragment array and fills it with the same taxid value for all cells.
@@ -146,6 +150,7 @@ def _build_taxid_array(n_frag, taxid):
     return taxids
 
 
+# tested
 def _combine_fragments_and_taxids(fragments, taxids):
     """
     Stacks fragments array and taxids array into a single matrix.
@@ -157,7 +162,8 @@ def _combine_fragments_and_taxids(fragments, taxids):
     return np.column_stack((fragments, taxids))
 
 
-def _build_fragment_dataset(taxid, seq, sample_length, coverage, seed=None):
+# tested
+def _build_fragment_taxid_array(taxid, seq, sample_length, coverage, seed=None):
     """
     Builds dataset of fragments and the corresponding (identical) taxid for each fragment.
 
@@ -182,6 +188,7 @@ def _build_fragment_dataset(taxid, seq, sample_length, coverage, seed=None):
     return combined
 
 
+# tested
 def _write_fragments(data, output_dir, i):
     """
     Writes data to given output directory as a binary numpy file.
@@ -198,6 +205,7 @@ def _write_fragments(data, output_dir, i):
         np.save(f, data)
 
 
+# tested
 def _create_fragment_directory(output_dir):
     """
     Creates fragment directory if it does not exist. Raises ValueError if it does exist to prevent overwriting of
@@ -215,7 +223,6 @@ def _create_fragment_directory(output_dir):
         os.mkdir(output_dir)
 
 
-# tested
 def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
     Todo - process sequences in parallel.
@@ -238,7 +245,7 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
 
     # process each sequence
     for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):
-        results = _build_fragment_dataset(taxids[i], seq_record.seq, sample_length, coverage, seed)
+        results = _build_fragment_taxid_array(taxids[i], seq_record.seq, sample_length, coverage, seed)
         _write_fragments(results, output_dir, i)
 
 
