@@ -102,11 +102,11 @@ def _build_fragment_array(seq, sample_length, n_frag):
     return fragments
 
 
-# based on code from paper
 # tested
 def draw_fragments(seq, sample_length, coverage, seed):
     """
-    Draws number of samples from sequence in order to achieve required coverage.
+    Draws number of samples from sequence in order to achieve required coverage. Follows general sampling procedure
+    laid out by Vervier et al. See https://arxiv.org/abs/1505.06915.
 
     :param seq: Bio.Seq.Seq, sequence to be sampled
     :param sample_length: int, length of samples
