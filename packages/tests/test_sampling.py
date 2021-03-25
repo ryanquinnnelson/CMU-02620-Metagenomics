@@ -164,7 +164,7 @@ def test_draw_fragments__output_directory_exists(tmp_path):
     coverage = 1
 
     with pytest.raises(ValueError):
-        sampling.draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage)
+        sampling._draw_fragments_2(seq_file, taxid_file, output_dir, sample_length, coverage)
 
 
 
@@ -189,7 +189,7 @@ def test_draw_fragments__output_directory_does_not_exist(tmp_path):
     coverage = 1
 
     # run function
-    sampling.draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage)
+    sampling._draw_fragments_2(seq_file, taxid_file, output_dir, sample_length, coverage)
 
     # read in written file
     output_file = output_dir / 'fragments-00000.npy'

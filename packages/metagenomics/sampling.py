@@ -171,7 +171,7 @@ def _write_fragments(output_dir, i, rows):
 
 
 # tested
-def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
+def _draw_fragments_2(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
     Todo - process sequences in parallel.
     Todo - handle single taxid case
@@ -204,28 +204,35 @@ def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, se
         _write_fragments(output_dir, i, results)
 
 
-
-
-
-
-
-def combine_fragments(input_dir):
+def _combine_fragment_files(input_dir):
     """
     Searches given input directory for fragment files and combines the result into a single file.
+    Todo - ensure this works when starting with 1D arrays
 
     :param input_dir: str, path to directory where fragments are stored
     :return: numpy matrix
     """
-    fnames = glob(input_dir + '/*')
+
+    # get list of fragment files
+    fnames = glob(input_dir + '/*.npy')
+
+    # process list
+    arrays = []
     for each in fnames:
         print(each)
 
         # read in file
         curr_frag = np.load(each)
 
-        # append to others
+        if len(curr_frag) > 0:
+            arrays.append(curr_frag)
+            print(arrays)
 
-    return fnames
+    # combine arrays
+    total = np.concatenate(arrays, axis=0)
+    return total
 
 
-# combine_fragments('/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/')
+def draw_fragments():
+    """Performs all steps necessary to generate fragments and make them available to the caller."""
+    pass
