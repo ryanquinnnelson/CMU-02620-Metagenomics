@@ -1,5 +1,5 @@
 """
-Defines sampling procedures for metagenomics data.
+Defines sampling functionality for metagenomics data.
 """
 import numpy as np
 
