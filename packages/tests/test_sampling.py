@@ -86,15 +86,13 @@ def test_fragment_is_valid__failure():
 
 
 def test_draw_fragments__valid_sequence():
-    record = SeqRecord(
-        Seq("actgCtgatGtctactgtac"),  # length of 20
-        id="YP_025292.1")
+    seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
     coverage = 1
 
     expected_n_frag = 4
 
-    actual = sampling.draw_fragments(record, sample_length, coverage)
+    actual = sampling.draw_fragments(seq, sample_length, coverage)
 
     # check number of fragments
     assert len(actual) == expected_n_frag
@@ -106,15 +104,13 @@ def test_draw_fragments__valid_sequence():
 
 
 def test_draw_fragments__invalid_sequence():
-    record = SeqRecord(
-        Seq("actgCtgatUtctactgtac"),  # length of 20
-        id="YP_025292.1")
+    seq = Seq("actgCtgatUtctactgtac")  # length of 20
     sample_length = 5
     coverage = 1
 
     expected_n_frag = 4
 
-    actual = sampling.draw_fragments(record, sample_length, coverage)
+    actual = sampling.draw_fragments(seq, sample_length, coverage)
 
     # check number of fragments
     assert len(actual) == expected_n_frag

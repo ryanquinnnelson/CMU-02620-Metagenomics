@@ -95,12 +95,12 @@ def fragment_is_valid(frag):
 
 # tested
 # based on code from paper
-def draw_fragments(seq_record, sample_length, coverage):
+def draw_fragments(seq, sample_length, coverage):
     """
     Assumes sequence is at least as long as than sample_length.
     Todo - Consider using numeric array to represent fragments instead of chars. (more space efficient)
 
-    :param seq_record: sequence to be sampled, expecting Bio.SeqRecord.SeqRecord
+    :param seq: Bio.Seq, sequence to be sampled
     :param sample_length: int, length of fragments to be drawn
     :param coverage: float, number of times each bp in the sequence is covered, on average.
     :param random_seed: int, seed for RNG. Provide a value for reproducibility.
@@ -108,7 +108,7 @@ def draw_fragments(seq_record, sample_length, coverage):
     """
 
     # compute number of fragments to draw
-    seq_id, seq, seq_length = split_record(seq_record)
+    seq_length = len(seq)
     n_frag = calc_number_fragments(seq_length, coverage, sample_length)
     frag_array = create_chararray(n_frag, sample_length)  # scaffold for fragments
 
@@ -129,37 +129,38 @@ def draw_fragments(seq_record, sample_length, coverage):
 
     return frag_array
 
-#
-# def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
-#     """
-#
-#     :param input_file: File in which sequences are stored. .fasta format expected.
-#     :param output_file:
-#     :param sample_length:
-#     :param coverage:
-#     :param random_seed:
-#     :return:
-#     """
-#
-#     # initialize random seed
-#     random.seed(random_seed)
-#     np.random.seed(random_seed)
-#
-#     # for each sequence, draw fragments as needed
-#     for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
-#         print('Building fragments for sequence {}...'.format(i))
-#
-#         # split record into id and sequence
-#         genome_id = seq_record.id
-#         seq = seq_record.seq
-#         seq_length = len(seq)
-#
-#         # skip sequences which are shorter than sample_length
-#         if seq_length >= sample_length:
-#             # draw fragments
-#             fragments = draw_fragments(lowercase_seq, sample_length, coverage, random_seed)
-#
-#             # save fragments to file
-#             write_fragments_to_file(fragments, output_file)
-#         else:
-#             print('Sequence is skipped because it is not long enough.')
+
+def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
+    """
+      Todo - consider parallel processing
+      Todo - consider writing separate files for each sequence in case file size is an issue
+    :param input_file: File in which sequences are stored. .fasta format expected.
+    :param output_file:
+    :param sample_length:
+    :param coverage:
+    :param random_seed:
+    :return:
+    """
+
+    # initialize random seed
+    random.seed(random_seed)
+    np.random.seed(random_seed)
+
+    # for each sequence, draw fragments as needed
+    for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
+        print('Building fragments for sequence {}...'.format(i))
+
+        # split record into id and sequence
+        genome_id = seq_record.id
+        seq = seq_record.seq
+        seq_length = len(seq)
+
+        # skip sequences which are shorter than sample_length
+        if seq_length >= sample_length:
+            # draw fragments
+            fragments = draw_fragments(seq, sample_length, coverage, random_seed)
+
+            # save fragments to file
+            write_fragments_to_file(fragments, output_file)
+        else:
+            print('Sequence is skipped because it is not long enough.')
