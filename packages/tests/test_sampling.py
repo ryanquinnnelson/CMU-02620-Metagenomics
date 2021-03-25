@@ -70,23 +70,23 @@ def test_get_random_position():
 
 def convert_frag_seq():
     seq = Seq("MKQH")
-    expected = np.array(['m', 'k', 'q', 'h', '-'])
+    expected = np.array([b'm', b'k', b'q', b'h', b'-'], dtype='|S1')
     actual = sampling.convert_frag_seq(seq)
     np.testing.assert_array_equal(actual, expected)
 
 
 def test_fragment_is_valid__success():
-    frag = np.array(['a', 'a', 'c', 't', 'g'])
+    frag = np.array([b'a', b'a', b'c', b't', b'g'], dtype='|S1')
     assert sampling.fragment_is_valid(frag)
 
 
 def test_fragment_is_valid__failure():
-    frag = np.array(['a', 'a', 'c', 't', 'h'])
+    frag = np.array([b'a', b'a', b'c', b't', b'h'], dtype='|S1')
     assert sampling.fragment_is_valid(frag) is False
 
 
 def test_update_frag_array__valid():
-    frag = np.array(['a', 'c', 't', 'g', '-'])
+    frag = np.array([b'a', b'c', b't', b'g', b'-'], dtype='|S1')
     charar = np.chararray((3, 5))
     charar[:] = '-'
     is_valid = True
@@ -99,7 +99,7 @@ def test_update_frag_array__valid():
 
 
 def test_update_frag_array__invalid():
-    frag = np.array(['a', 'c', 't', 'g', '-'])
+    frag = np.array([b'a', b'c', b't', b'g', b'-'], dtype='|S1')
     charar = np.chararray((3, 5))
     charar[:] = '-'
     is_valid = False

@@ -82,7 +82,8 @@ def convert_frag_seq(frag_seq):
 
 # tested
 def fragment_is_valid(frag):
-    allowed = ['a', 'c', 't', 'g']
+    print(frag)
+    allowed = [b'a', b'c', b't', b'g']
     return all(c in allowed for c in frag)
 
 
@@ -161,6 +162,7 @@ def draw_fragments(seq_record, sample_length, coverage):
     seq_id, seq, seq_length = split_record(seq_record)
     n_frag = calc_number_fragments(seq_length, coverage, sample_length)
 
+    # generate fragments
     frag_array = create_chararray(n_frag, sample_length)  # scaffold for fragments and validation flag
     for i in range(n_frag):
         # get fragment
@@ -171,7 +173,7 @@ def draw_fragments(seq_record, sample_length, coverage):
         frag = convert_frag_seq(frag_seq)
 
         # validate fragment doesn't contain unexpected characters
-        is_valid = fragment_is_valid(frag)
+        is_valid = fragment_is_valid(frag[:-1])  # remove validation column
 
         # update fragment array with chosen fragment
         frag_array = update_frag_array(frag, frag_array, is_valid, i)
