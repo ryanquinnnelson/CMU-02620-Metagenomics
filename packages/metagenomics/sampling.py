@@ -99,6 +99,7 @@ def draw_fragments(seq, sample_length, coverage):
     """
     Assumes sequence is at least as long as than sample_length.
     Todo - Consider using numeric array to represent fragments instead of chars. (more space efficient)
+    Todo - Put in way to exit infinite loop in the case that it is not possible to generate valid fragments
 
     :param seq: Bio.Seq, sequence to be sampled
     :param sample_length: int, length of fragments to be drawn
@@ -114,6 +115,7 @@ def draw_fragments(seq, sample_length, coverage):
 
     # draw fragments
     n_valid = 0
+    counter = 0
     while n_valid < n_frag:
         # get fragment
         start_pos, one_after_end = get_random_position(seq_length, sample_length)
@@ -127,40 +129,59 @@ def draw_fragments(seq, sample_length, coverage):
             frag_array[n_valid] = frag  # save
             n_valid += 1
 
+        # update counter
+        counter += 1
+        if counter > n_frag * 2:
+            raise ValueError(
+                'Too many invalid fragments encountered. Sampling is stopped after {} attempts.'.format(counter))
+
     return frag_array
 
-
-def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
-    """
-      Todo - consider parallel processing
-      Todo - consider writing separate files for each sequence in case file size is an issue
-    :param input_file: File in which sequences are stored. .fasta format expected.
-    :param output_file:
-    :param sample_length:
-    :param coverage:
-    :param random_seed:
-    :return:
-    """
-
-    # initialize random seed
-    random.seed(random_seed)
-    np.random.seed(random_seed)
-
-    # for each sequence, draw fragments as needed
-    for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
-        print('Building fragments for sequence {}...'.format(i))
-
-        # split record into id and sequence
-        genome_id = seq_record.id
-        seq = seq_record.seq
-        seq_length = len(seq)
-
-        # skip sequences which are shorter than sample_length
-        if seq_length >= sample_length:
-            # draw fragments
-            fragments = draw_fragments(seq, sample_length, coverage, random_seed)
-
-            # save fragments to file
-            write_fragments_to_file(fragments, output_file)
-        else:
-            print('Sequence is skipped because it is not long enough.')
+#
+# def build_output_rows(fragments, taxid, header=None):
+#
+#
+# # def write_fragments_to_file(filename, fragments, taxid, header=None):
+# #     # open file handle
+# #     with open(filename, "a") as output_handle:
+# #         write = csv.writer(output_handle)
+# #
+# #         if header:
+# #             write.writerow(header)
+# #
+# #         for row in fragments:
+# #             output_row = taxid + row.tolist()
+# #             write.writerow(output_row)
+#
+#
+# def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
+#     """
+#       Todo - consider parallel processing
+#       Todo - consider writing separate files for each sequence in case file size is an issue
+#     :param input_file: File in which sequences are stored. .fasta format expected.
+#     :param output_file:
+#     :param sample_length:
+#     :param coverage:
+#     :param random_seed:
+#     :return:
+#     """
+#
+#     # initialize random seed
+#     random.seed(random_seed)
+#     np.random.seed(random_seed)
+#
+#     # for each sequence, draw fragments as needed
+#     for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
+#         print('Building fragments for sequence {}...'.format(i))
+#
+#         # skip sequences which are shorter than sample_length
+#         seq_id, seq, seq_length = split_record(seq_record)
+#         if seq_length >= sample_length:
+#
+#             # draw fragments
+#             fragments = draw_fragments(seq, sample_length, coverage, random_seed)
+#
+#             # save fragments to file
+#             write_fragments_to_file(fragments, output_file)
+#         else:
+#             print('Sequence is skipped because it is not long enough.')

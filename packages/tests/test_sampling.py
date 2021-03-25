@@ -2,6 +2,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from packages.metagenomics import sampling
 import numpy as np
+import pytest
 
 
 def test_split_record():
@@ -117,3 +118,12 @@ def test_draw_fragments__invalid_sequence():
 
     for frag in actual.tolist():
         assert b'u' not in frag
+
+
+def test_draw_fragments__infinite_loop():
+    seq = Seq("aUtgCUgatUtctUctgUac")  # no valid fragments
+    sample_length = 5
+    coverage = 1
+
+    with pytest.raises(ValueError):
+        sampling.draw_fragments(seq, sample_length, coverage)
