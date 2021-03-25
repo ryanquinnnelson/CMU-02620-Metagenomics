@@ -1,22 +1,20 @@
 """
 Defines sampling procedures for metagenomics data.
 """
-from Bio import SeqIO
 import numpy as np
-import random
 
 
 # tested
-# based on code from paper
 def calc_number_fragments(seq_length, coverage, sample_length):
     """
     Calculates the number of fragments to be randomly sampled from the given sequence in order to
-    achieve required coverage.
+    achieve desired coverage. Uses formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
 
-    :param seq_length: length of the sequence
-    :param coverage: float, percent of sequence coverage via sampling
-    :param sample_length: length of each fragment
-    :return: int, number of fragments
+    :param seq_length: int, length of sequence to be sampled
+    :param coverage: float, desired coverage
+            (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
+    :param sample_length: int, length of samples
+    :return: int, number of fragments to sample
     """
     n_frag = seq_length * coverage / sample_length
     return round(n_frag)
@@ -26,13 +24,11 @@ def calc_number_fragments(seq_length, coverage, sample_length):
 def get_random_position(seq_length, sample_length):
     """
     Selects a random start position for a sample, considering the length of the sequence and the length of the sample.
-    Calculates the position after the sample end for slicing purposes.
 
-    :param seq_length: length of sequence
-    :param sample_length: length of fragment
-    :return: (int, int) Tuple representing (start position, one position after end position).
+    :param seq_length: int, length of sequence to be sampled
+    :param sample_length: int, length of samples
+    :return: int, starting position defining subsequence of sample_length in sequence
     """
-
     return np.random.randint(0, seq_length - sample_length)
 
 
@@ -40,9 +36,9 @@ def get_random_position(seq_length, sample_length):
 def fragment_is_valid(frag):
     """
     Determines if fragment meets criteria required to be valid. Currently, the criteria is that all letters in the
-    fragment are lowercase and are DNA nucleotides i.e. {a,c,t,g}.
+    fragment are lowercase and encode DNA nucleotides i.e. {a,c,t,g}.
 
-    :param frag: Fragment selected from sequence
+    :param frag: str, fragment selected from sequence
     :return: True if fragment is valid, false otherwise.
     """
     allowed = ['a', 'c', 't', 'g']
@@ -51,6 +47,13 @@ def fragment_is_valid(frag):
 
 # tested
 def draw_fragment(seq, sample_length):
+    """
+    Chooses random subsequence of given sample_length within given sequence.
+
+    :param seq: Bio.Seq.Seq, sequence to be sampled
+    :param sample_length: int, length of samples
+    :return: str, lowercase string representing subsequence
+    """
     # choose random subsequence
     seq_length = len(seq)
     start_pos = get_random_position(seq_length, sample_length)
@@ -64,11 +67,14 @@ def draw_fragment(seq, sample_length):
 # tested
 def build_fragment_array(seq, sample_length, n_frag):
     """
+    Draws required number of valid fragments from sequence and constructs array of results.
+    Raises ValueError if too many invalid sequences are sampled in order to prevent an infinite loop in the case that
+    the sequence does not contain valid subsequences of sample_length.
 
-    :param seq:
-    :param sample_length:
-    :param n_frag:
-    :return:
+    :param seq: Bio.Seq.Seq, sequence to be sampled
+    :param sample_length: int, length of samples
+    :param n_frag: int, number of fragments to sample
+    :return: n_frag x 1 array
     """
     fragments = np.chararray((n_frag,), itemsize=sample_length)  # scaffold for fragments
 
@@ -102,11 +108,15 @@ def draw_fragments(seq, sample_length, coverage, seed):
     """
     Draws number of samples from sequence in order to achieve required coverage.
 
-    :param seq: Sequence to be sampled
-    :param sample_length: Length of sample
-    :param coverage: Coverage value
-    :return: n x 1 array, where n is the number of fragments drawn from sample
+    :param seq: Bio.Seq.Seq, sequence to be sampled
+    :param sample_length: int, length of samples
+    :param coverage: float, desired coverage
+            (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
+    :param seed: random seed, for reproducibility
+    :return: n x 1 array, where n is the number of fragments drawn from sample in order to meet required coverage.
+            Returns None if sequence length is less than sample length.
     """
+
     # initialize random seed
     np.random.seed(seed)
 
@@ -119,61 +129,3 @@ def draw_fragments(seq, sample_length, coverage, seed):
         fragments = None
 
     return fragments
-
-
-# tested
-def build_taxid_array(n_frag, taxid):
-    taxid_length = len(taxid)
-    taxids = np.chararray((n_frag,), itemsize=taxid_length)
-    taxids[:] = taxid
-
-    return taxids
-
-
-# tested
-def build_output_rows(fragments, taxid):
-    n_frag = len(fragments)
-    taxids = build_taxid_array(n_frag, taxid)
-    return np.column_stack((taxids, fragments))
-
-# # tested
-# def split_record(seq_record):
-#     """
-#     Splits SeqRecord into id, sequence then calculates sequence length.
-#
-#     :param seq_record: SeqRecord
-#     :return: (str, Seq, int) Tuple representing (sequence id, sequence, sequence length).
-#     """
-#     seq = seq_record.seq
-#     return seq_record.id, seq, len(seq)
-
-
-# def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
-#     """
-#       Todo - consider parallel processing
-#       Todo - consider writing separate files for each sequence in case file size is an issue
-#     :param input_file: File in which sequences are stored. .fasta format expected.
-#     :param output_file:
-#     :param sample_length:
-#     :param coverage:
-#     :param random_seed:
-#     :return:
-#     """
-#
-
-#
-#     # for each sequence, draw fragments as needed
-#     for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
-#         print('Building fragments for sequence {}...'.format(i))
-#
-#         # skip sequences which are shorter than sample_length
-#         seq_id, seq, seq_length = split_record(seq_record)
-#         if seq_length >= sample_length:
-#
-#             # draw fragments
-#             fragments = draw_fragments(seq, sample_length, coverage, random_seed)
-#
-#             # save fragments to file
-#             write_fragments_to_file(fragments, output_file)
-#         else:
-#             print('Sequence is skipped because it is not long enough.')

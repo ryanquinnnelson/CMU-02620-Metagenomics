@@ -114,10 +114,11 @@ def test_build_fragment_array__infinite_loop():
     with pytest.raises(ValueError):
         sampling.build_fragment_array(seq, sample_length, n_frag)
 
+
 def test_draw_fragments():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
-    coverage=1
+    coverage = 1
     seed = 42
 
     actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
@@ -130,18 +131,17 @@ def test_draw_fragments():
     for frag in actual.tolist():
         assert all(c in allowed for c in frag.decode('utf-8'))
 
+
 def test_draw_fragments__seq_too_short():
     seq = Seq("act")  # length of 20
     sample_length = 5
-    coverage=1
+    coverage = 1
     seed = 0
 
     actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
 
     # check number of fragments
     assert actual is None
-
-
 
 
 def test_build_taxid_array():
