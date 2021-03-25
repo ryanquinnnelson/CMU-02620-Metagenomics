@@ -36,15 +36,14 @@ def calc_number_fragments(seq_length, coverage, sample_length):
 # tested
 def create_chararray(n_frag, sample_length):
     """
-    Creates a numpy char array to contain fragments as they are generated, in addition to a flag indicating whether
-    fragment is valid.
+    Creates a numpy char array to contain fragments as they are generated.
 
     :param n_frag: number of fragments to sample
     :param sample_length: length of each fragment
-    :return: n x m matrix, where n is thenumber of fragments and m is sample_length + 1
+    :return: n x L matrix, where n is the number of fragments and L is sample_length
     """
-    charar = np.chararray((n_frag, sample_length + 1))
-    charar[:] = '-'
+    charar = np.chararray((n_frag, sample_length))
+    charar[:] = '!'
     return charar
 
 
@@ -75,73 +74,16 @@ def convert_frag_seq(frag_seq):
     """
 
     seq_lower = frag_seq.lower()
-    split_seq = list(seq_lower) + ['-']  # add column to end
-    charar = np.array([split_seq], dtype='|S1')
+    split_seq = list(seq_lower)
+    charar = np.array(split_seq, dtype='|S1')
     return charar
 
 
 # tested
 def fragment_is_valid(frag):
+    print(frag)
     allowed = [b'a', b'c', b't', b'g']
     return all(c in allowed for c in frag)
-
-
-# tested
-def update_frag_array(frag, charar, is_valid, i):
-    """
-    Replaces ith row of character array with fragment and sets validation flag according to validity of fragment.
-    If fragment is valid, sets last column of ith row to 'v'.
-    If fragment is invalid, sets last column of ith row to 'i'.
-
-    :param frag:
-    :param charar:
-    :param is_valid:
-    :param i:
-    :return:
-    """
-    # replace ith row with frag
-    charar[i] = frag
-
-    # set validation flag
-    j = charar.shape[1] - 1  # last column
-    if is_valid:
-        charar[i][j] = 'v'
-    else:
-        charar[i][j] = 'i'
-
-    return charar
-
-
-# tested
-def get_valid_rows(charar):
-    """
-    Determines which rows in the character array are invalid.
-    Assumes invalid rows are marked by 'i' in their last column.
-
-    :param charar: character array to check
-    :return: array of invalid rows
-    """
-    n_cols = charar.shape[1]
-    return np.where(charar[:, n_cols - 1] == b'v')
-
-
-# tested
-def remove_invalid_frags(charar):
-    """
-    Removes invalid rows from fragment array and removes validation flag column.
-
-    :param charar: n x m matrix, where
-    :return: (n - i) x (m - 1) matrix, where i is the number of invalid fragments
-    """
-    # get list of invalid rows
-    valid = get_valid_rows(charar)
-    charar = charar[valid]
-
-    # remove validation flag column
-    last_col = charar.shape[1] - 1
-    charar = np.delete(charar, last_col, axis=1)
-
-    return charar
 
 
 # tested
@@ -149,7 +91,6 @@ def remove_invalid_frags(charar):
 def draw_fragments(seq_record, sample_length, coverage):
     """
     Assumes sequence is at least as long as than sample_length.
-    Todo - Replace invalid samples with valid samples.
     Todo - Consider using numeric array to represent fragments instead of chars. (more space efficient)
 
     :param seq_record: sequence to be sampled, expecting Bio.SeqRecord.SeqRecord
@@ -162,10 +103,11 @@ def draw_fragments(seq_record, sample_length, coverage):
     # compute number of fragments to draw
     seq_id, seq, seq_length = split_record(seq_record)
     n_frag = calc_number_fragments(seq_length, coverage, sample_length)
+    frag_array = create_chararray(n_frag, sample_length)  # scaffold for fragments
 
-    # generate fragments
-    frag_array = create_chararray(n_frag, sample_length)  # scaffold for fragments and validation flag
-    for i in range(n_frag):
+    # draw fragments
+    n_valid = 0
+    while n_valid < n_frag:
         # get fragment
         start_pos, one_after_end = get_random_position(seq_length, sample_length)
         frag_seq = seq[start_pos:one_after_end]
@@ -173,14 +115,11 @@ def draw_fragments(seq_record, sample_length, coverage):
         # convert to lowercase character array
         frag = convert_frag_seq(frag_seq)
 
-        # validate fragment doesn't contain unexpected characters
-        is_valid = fragment_is_valid(frag[:-1])  # remove validation column for this check
-
-        # update fragment array with chosen fragment
-        frag_array = update_frag_array(frag, frag_array, is_valid, i)
-
-    # remove invalid sequences from fragment array and remove validation column
-    frag_array = remove_invalid_frags(frag_array)
+        # determine whether to save or discard fragment
+        if fragment_is_valid(frag):
+            frag_array[n_valid] = frag
+            n_valid += 1
+            print(frag_array)
 
     return frag_array
 
