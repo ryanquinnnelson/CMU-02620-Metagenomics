@@ -124,7 +124,7 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage):
         n_frag = _calc_number_fragments(seq_length, coverage, sample_length)
         fragments = _build_fragment_array(seq, sample_length, n_frag)
     else:
-        fragments = np.empty(0,)
+        fragments = np.empty(0, )
 
     return fragments
 
@@ -146,17 +146,30 @@ def _build_fragment_rows_for_sequence(fragments, taxid):
     return rows
 
 
-# Todo - process sequences in parallel.
+# tested
 def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
+    """
+    Todo - process sequences in parallel.
+    Todo - handle single taxid case
+
+    :param seq_file:
+    :param taxid_file:
+    :param output_dir:
+    :param sample_length:
+    :param coverage:
+    :param seed:
+    :return:
+    """
 
     if seed:
         np.random.seed(seed)  # initialize random seed
 
     # read in taxids
-    taxids = np.loadtxt(taxid_file)
+    taxids = np.loadtxt(taxid_file, dtype=str)
 
     # read in sequences
     for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):
+
         # build fragment data
         fragments = _draw_fragments_for_sequence(seq_record.seq, sample_length, coverage)
 

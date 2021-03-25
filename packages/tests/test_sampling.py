@@ -142,33 +142,33 @@ def test__build_fragment_rows_for_sequence():
     np.testing.assert_array_equal(actual, expected)
 
 
-# def test_draw_fragments(tmp_path):
-#
-#     seq_file = tmp_path + '/tmp.seq'
-#     taxid_file = tmp_path + '/tmp.taxid'
-#     print(tmp_path)
-#     # generate temporary files
-#     seq_contents = '>NC_013451\nagcaagcaccaacagcaatacatatagcctaaaggttccatgtccaaaaggaaattggaa'
-#     taxid_contents = '1280'
-#     with open(seq_file, 'w') as output_handle:
-#         output_handle.write(seq_contents)
-#
-#     with open(taxid_file, 'w') as output_handle:
-#         output_handle.write(taxid_contents)
-#
-#     # read in files
-#     with open(seq_file, 'r') as output_handle:
-#         print(output_handle.read())
-#
-#     with open(taxid_file, 'r') as output_handle:
-#         print(output_handle.read())
-#
-#     1/0
+def test_draw_fragments(tmp_path):
+    # generate temporary files
+    # temp directory
+    d = tmp_path / "sampling"
+    d.mkdir()
 
+    # temp files
+    seq_file = d / 'tmp.seq'
+    taxid_file = d / 'tmp.taxid'
+    seq_contents = '>NC_013451\nagcaagcaccaacagcaatacatatagcctaaaggttccatgtccaaaaggaaattggaa'
+    taxid_contents = '1280\n1280'
+    with open(seq_file, 'w') as output_handle:
+        output_handle.write(seq_contents)
 
+    with open(taxid_file, 'w') as output_handle:
+        output_handle.write(taxid_contents)
 
+    output_dir = d
+    sample_length = 5
+    coverage = 1
 
+    # run function
+    sampling.draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage)
 
-    # output_dir = ''
-    # sample_length = 5
-    # coverage = 1
+    # read in written file
+    output_file = output_dir / 'fragments-00000.npy'
+    print(output_file)
+    fragments = np.load(output_file)
+    assert fragments.shape == (12, 2)
+    assert fragments[0][0] == b'1280'
