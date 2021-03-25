@@ -85,9 +85,7 @@ def test_fragment_is_valid__failure():
     assert sampling.fragment_is_valid(frag) is False
 
 
-
-
-def test_draw_fragments():
+def test_draw_fragments__valid_sequence():
     record = SeqRecord(
         Seq("actgCtgatGtctactgtac"),  # length of 20
         id="YP_025292.1")
@@ -102,7 +100,24 @@ def test_draw_fragments():
     assert len(actual) == expected_n_frag
 
     for frag in actual.tolist():
-
         # check that all fragments are lowercase
         allowed = [b'a', b'c', b't', b'g']
         assert all(c in allowed for c in frag)
+
+
+def test_draw_fragments__invalid_sequence():
+    record = SeqRecord(
+        Seq("actgCtgatUtctactgtac"),  # length of 20
+        id="YP_025292.1")
+    sample_length = 5
+    coverage = 1
+
+    expected_n_frag = 4
+
+    actual = sampling.draw_fragments(record, sample_length, coverage)
+
+    # check number of fragments
+    assert len(actual) == expected_n_frag
+
+    for frag in actual.tolist():
+        assert b'u' in frag

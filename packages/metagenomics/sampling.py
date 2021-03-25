@@ -10,6 +10,7 @@ import random
 def split_record(seq_record):
     """
     Splits SeqRecord into id, sequence then calculates sequence length.
+
     :param seq_record: SeqRecord
     :return: (str, Seq, int) Tuple representing (sequence id, sequence, sequence length).
     """
@@ -81,7 +82,13 @@ def convert_frag_seq(frag_seq):
 
 # tested
 def fragment_is_valid(frag):
-    print(frag)
+    """
+    Determines if fragment meets criteria required to be valid. Currently, the criteria is that all letters in the
+    fragment are lowercase and are DNA nucleotides i.e. {a,c,t,g}.
+
+    :param frag: Fragment selected from sequence
+    :return: True if fragment is valid, false otherwise.
+    """
     allowed = [b'a', b'c', b't', b'g']
     return all(c in allowed for c in frag)
 
@@ -97,7 +104,7 @@ def draw_fragments(seq_record, sample_length, coverage):
     :param sample_length: int, length of fragments to be drawn
     :param coverage: float, number of times each bp in the sequence is covered, on average.
     :param random_seed: int, seed for RNG. Provide a value for reproducibility.
-    :return:
+    :return: n x m matrix, where n is the number of fragments and m is the sample_length
     """
 
     # compute number of fragments to draw
@@ -117,9 +124,8 @@ def draw_fragments(seq_record, sample_length, coverage):
 
         # determine whether to save or discard fragment
         if fragment_is_valid(frag):
-            frag_array[n_valid] = frag
+            frag_array[n_valid] = frag  # save
             n_valid += 1
-            print(frag_array)
 
     return frag_array
 
