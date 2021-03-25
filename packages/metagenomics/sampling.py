@@ -3,6 +3,8 @@ Defines sampling functionality for metagenomics data.
 """
 import numpy as np
 from Bio import SeqIO
+from glob import glob
+import os
 
 
 # tested
@@ -104,7 +106,7 @@ def _build_fragment_array(seq, sample_length, n_frag):
 
 
 # tested
-def _draw_fragments_for_sequence(seq, sample_length, coverage):
+def _draw_fragments_for_sequence(seq, sample_length, coverage, seed=None):
     """
     Draws number of samples from sequence in order to achieve required coverage. Follows general sampling procedure
     laid out by Vervier et al. See https://arxiv.org/abs/1505.06915.
@@ -113,10 +115,13 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage):
     :param sample_length: int, length of samples
     :param coverage: float, desired coverage
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
-    :param seed: random seed, for reproducibility
     :return: n x 1 array, where n is the number of fragments drawn from sample in order to meet required coverage.
             Returns empty array if sequence length is less than sample length.
     """
+
+    if seed:
+        # initialize random seed
+        np.random.seed(seed)
 
     # sample fragments if possible
     seq_length = len(seq)
@@ -146,11 +151,31 @@ def _build_fragment_rows_for_sequence(fragments, taxid):
     return rows
 
 
+def _generate_fragment_data(taxid, seq, sample_length, coverage, seed):
+
+    # get fragments
+    fragments = _draw_fragments_for_sequence(seq, sample_length, coverage, seed)
+
+    # define taxid info for each fragment
+    rows = _build_fragment_rows_for_sequence(fragments, taxid)
+
+    return rows
+
+
+def _write_fragments(output_dir, i, rows):
+
+    # write fragment data to file
+    output_file = '{}/fragments-{}.npy'.format(output_dir, str(i).zfill(5))
+    with open(output_file, 'wb') as f:
+        np.save(f, rows)
+
+
 # tested
 def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
     Todo - process sequences in parallel.
     Todo - handle single taxid case
+    Output directory cannot exist.
 
     :param seq_file:
     :param taxid_file:
@@ -161,22 +186,46 @@ def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, se
     :return:
     """
 
-    if seed:
-        np.random.seed(seed)  # initialize random seed
+    # check if output directory exists
+    dir_exists = os.path.isdir(output_dir)
+
+    if dir_exists:
+        raise ValueError('Output directory already exists:', output_dir)
+    else:
+        os.mkdir(output_dir)
 
     # read in taxids
     taxids = np.loadtxt(taxid_file, dtype=str)
 
-    # read in sequences
+    # process each sequence
     for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):
 
-        # build fragment data
-        fragments = _draw_fragments_for_sequence(seq_record.seq, sample_length, coverage)
+        results = _generate_fragment_data(taxids[i], seq_record.seq, sample_length, coverage, seed)
+        _write_fragments(output_dir, i, results)
 
-        if len(fragments) > 0:
-            rows = _build_fragment_rows_for_sequence(fragments, taxids[i])
 
-            # write fragment data to file
-            output_file = '{}/fragments-{}.npy'.format(output_dir, str(i).zfill(5))
-            with open(output_file, 'wb') as f:
-                np.save(f, rows)
+
+
+
+
+
+def combine_fragments(input_dir):
+    """
+    Searches given input directory for fragment files and combines the result into a single file.
+
+    :param input_dir: str, path to directory where fragments are stored
+    :return: numpy matrix
+    """
+    fnames = glob(input_dir + '/*')
+    for each in fnames:
+        print(each)
+
+        # read in file
+        curr_frag = np.load(each)
+
+        # append to others
+
+    return fnames
+
+
+# combine_fragments('/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/')

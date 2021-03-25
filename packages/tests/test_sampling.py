@@ -142,7 +142,7 @@ def test__build_fragment_rows_for_sequence():
     np.testing.assert_array_equal(actual, expected)
 
 
-def test_draw_fragments(tmp_path):
+def test_draw_fragments__output_directory_exists(tmp_path):
     # generate temporary files
     # temp directory
     d = tmp_path / "sampling"
@@ -159,7 +159,32 @@ def test_draw_fragments(tmp_path):
     with open(taxid_file, 'w') as output_handle:
         output_handle.write(taxid_contents)
 
-    output_dir = d
+    output_dir = d  #'/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/packages/metagenomics/data/sampling'
+    sample_length = 5
+    coverage = 1
+
+    with pytest.raises(ValueError):
+        sampling.draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage)
+
+
+
+def test_draw_fragments__output_directory_does_not_exist(tmp_path):
+    # generate temporary files
+    # temp directory
+    d = tmp_path
+
+    # temp files
+    seq_file = d / 'tmp.seq'
+    taxid_file = d / 'tmp.taxid'
+    seq_contents = '>NC_013451\nagcaagcaccaacagcaatacatatagcctaaaggttccatgtccaaaaggaaattggaa'
+    taxid_contents = '1280\n1280'
+    with open(seq_file, 'w') as output_handle:
+        output_handle.write(seq_contents)
+
+    with open(taxid_file, 'w') as output_handle:
+        output_handle.write(taxid_contents)
+
+    output_dir = d / "sampling" #'/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/packages/metagenomics/data/sampling'
     sample_length = 5
     coverage = 1
 
