@@ -223,6 +223,23 @@ def _create_fragment_directory(output_dir):
         os.mkdir(output_dir)
 
 
+# tested
+def _read_taxid_data(taxid_file):
+    """
+    Reads in taxid data and formats it as required for sampling.
+
+    :param taxid_file: path to taxid file
+    :return: m x 1 array, where m is the number of taxids
+    """
+    taxids = np.loadtxt(taxid_file, dtype=str)
+
+    if taxids.shape == ():  # single line in file
+        taxids = taxids.reshape(1, )
+
+    return taxids
+
+
+# tested
 def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
     Todo - process sequences in parallel.
@@ -241,7 +258,7 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
     _create_fragment_directory(output_dir)
 
     # read taxid data
-    taxids = np.loadtxt(taxid_file, dtype=str)
+    taxids = _read_taxid_data(taxid_file)
 
     # process each sequence
     for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):

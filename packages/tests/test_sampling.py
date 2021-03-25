@@ -214,6 +214,36 @@ def test__create_fragment_directory__directory_does_not_exist(tmp_path):
     assert os.path.isdir(d)
 
 
+def test__read_taxid_data__single_row(tmp_path):
+    # create mockup files
+    d = tmp_path  # use temp directory
+
+    # taxid file
+    taxid_file = d / 'tmp.taxid'
+    taxid_contents = '1280'
+    with open(taxid_file, 'w') as output_handle:
+        output_handle.write(taxid_contents)
+
+    actual = sampling._read_taxid_data(taxid_file)
+    expected = np.array(['1280'])
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test__read_taxid_data__multiple_rows(tmp_path):
+    # create mockup files
+    d = tmp_path  # use temp directory
+
+    # taxid file
+    taxid_file = d / 'tmp.taxid'
+    taxid_contents = '1280\n1234'
+    with open(taxid_file, 'w') as output_handle:
+        output_handle.write(taxid_contents)
+
+    actual = sampling._read_taxid_data(taxid_file)
+    expected = np.array(['1280', '1234'])
+    np.testing.assert_array_equal(actual, expected)
+
+
 def test_generate_fragment_data__one_sequence(tmp_path):
     # create mockup files
     d = tmp_path  # use temp directory
@@ -226,7 +256,7 @@ def test_generate_fragment_data__one_sequence(tmp_path):
 
     # taxid file
     taxid_file = d / 'tmp.taxid'
-    taxid_contents = '1280\n1280'
+    taxid_contents = '1280'
     with open(taxid_file, 'w') as output_handle:
         output_handle.write(taxid_contents)
 
