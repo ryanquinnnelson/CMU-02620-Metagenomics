@@ -77,17 +77,15 @@ def test_draw_fragment():
     assert actual in seq.lower()
 
 
-def test_draw_fragments__valid_sequence():
+def test_build_fragment_array__valid_sequence():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
-    coverage = 1
+    n_frag = 4
 
-    expected_n_frag = 4
-
-    actual = sampling.draw_fragments(seq, sample_length, coverage)
+    actual = sampling.build_fragment_array(seq, sample_length, n_frag)
 
     # check number of fragments
-    assert len(actual) == expected_n_frag
+    assert len(actual) == n_frag
 
     # check that all fragments are lowercase and contain only a,c,t,g
     allowed = ['a', 'c', 't', 'g']
@@ -95,29 +93,55 @@ def test_draw_fragments__valid_sequence():
         assert all(c in allowed for c in frag.decode('utf-8'))
 
 
-def test_draw_fragments__invalid_sequence():
+def test_build_fragment_array__invalid_sequence():
     seq = Seq("actgCtgatUtctactgtac")  # length of 20
     sample_length = 5
-    coverage = 1
+    n_frag = 4
 
-    expected_n_frag = 4
-
-    actual = sampling.draw_fragments(seq, sample_length, coverage)
+    actual = sampling.build_fragment_array(seq, sample_length, n_frag)
 
     # check number of fragments
-    assert len(actual) == expected_n_frag
+    assert len(actual) == n_frag
 
     for frag in actual.tolist():
         assert 'u' not in frag.decode('utf-8')
 
 
-def test_draw_fragments__infinite_loop():
+def test_build_fragment_array__infinite_loop():
     seq = Seq("aUtgCUgatUtctUctgUac")  # no valid fragments
     sample_length = 5
-    coverage = 1
-
+    n_frag = 4
     with pytest.raises(ValueError):
-        sampling.draw_fragments(seq, sample_length, coverage)
+        sampling.build_fragment_array(seq, sample_length, n_frag)
+
+def test_draw_fragments():
+    seq = Seq("actgCtgatgtctactgtac")  # length of 20
+    sample_length = 5
+    coverage=1
+    seed = 42
+
+    actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
+
+    # check number of fragments
+    assert len(actual) == 4
+
+    # check that all fragments are lowercase and contain only a,c,t,g
+    allowed = ['a', 'c', 't', 'g']
+    for frag in actual.tolist():
+        assert all(c in allowed for c in frag.decode('utf-8'))
+
+def test_draw_fragments__seq_too_short():
+    seq = Seq("act")  # length of 20
+    sample_length = 5
+    coverage=1
+    seed = 0
+
+    actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
+
+    # check number of fragments
+    assert actual is None
+
+
 
 
 def test_build_taxid_array():

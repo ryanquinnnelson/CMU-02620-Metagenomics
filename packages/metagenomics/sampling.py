@@ -61,19 +61,15 @@ def draw_fragment(seq, sample_length):
     return str(frag_seq)
 
 
-# based on code from paper
-def draw_fragments(seq, sample_length, coverage):
+# tested
+def build_fragment_array(seq, sample_length, n_frag):
     """
-    Draws number of samples from sequence in order to achieve required coverage.
 
-    :param seq: Sequence to be sampled
-    :param sample_length: Length of sample
-    :param coverage: Coverage value
-    :return: n x 1 array, where n is the number of fragments drawn from sample
+    :param seq:
+    :param sample_length:
+    :param n_frag:
+    :return:
     """
-    # compute number of fragments to draw
-    seq_length = len(seq)
-    n_frag = calc_number_fragments(seq_length, coverage, sample_length)
     fragments = np.chararray((n_frag,), itemsize=sample_length)  # scaffold for fragments
 
     # draw fragments
@@ -100,6 +96,31 @@ def draw_fragments(seq, sample_length, coverage):
     return fragments
 
 
+# based on code from paper
+# tested
+def draw_fragments(seq, sample_length, coverage, seed):
+    """
+    Draws number of samples from sequence in order to achieve required coverage.
+
+    :param seq: Sequence to be sampled
+    :param sample_length: Length of sample
+    :param coverage: Coverage value
+    :return: n x 1 array, where n is the number of fragments drawn from sample
+    """
+    # initialize random seed
+    np.random.seed(seed)
+
+    # sample fragments if possible
+    seq_length = len(seq)
+    if seq_length >= sample_length:
+        n_frag = calc_number_fragments(seq_length, coverage, sample_length)
+        fragments = build_fragment_array(seq, sample_length, n_frag)
+    else:
+        fragments = None
+
+    return fragments
+
+
 # tested
 def build_taxid_array(n_frag, taxid):
     taxid_length = len(taxid)
@@ -115,7 +136,6 @@ def build_output_rows(fragments, taxid):
     taxids = build_taxid_array(n_frag, taxid)
     return np.column_stack((taxids, fragments))
 
-
 # # tested
 # def split_record(seq_record):
 #     """
@@ -128,34 +148,32 @@ def build_output_rows(fragments, taxid):
 #     return seq_record.id, seq, len(seq)
 
 
-def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
-    """
-      Todo - consider parallel processing
-      Todo - consider writing separate files for each sequence in case file size is an issue
-    :param input_file: File in which sequences are stored. .fasta format expected.
-    :param output_file:
-    :param sample_length:
-    :param coverage:
-    :param random_seed:
-    :return:
-    """
+# def build_fragments(input_file, output_file, sample_length, coverage, random_seed=0):
+#     """
+#       Todo - consider parallel processing
+#       Todo - consider writing separate files for each sequence in case file size is an issue
+#     :param input_file: File in which sequences are stored. .fasta format expected.
+#     :param output_file:
+#     :param sample_length:
+#     :param coverage:
+#     :param random_seed:
+#     :return:
+#     """
+#
 
-    # initialize random seed
-    random.seed(random_seed)
-    np.random.seed(random_seed)
-
-    # for each sequence, draw fragments as needed
-    for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
-        print('Building fragments for sequence {}...'.format(i))
-
-        # skip sequences which are shorter than sample_length
-        seq_id, seq, seq_length = split_record(seq_record)
-        if seq_length >= sample_length:
-
-            # draw fragments
-            fragments = draw_fragments(seq, sample_length, coverage, random_seed)
-
-            # save fragments to file
-            write_fragments_to_file(fragments, output_file)
-        else:
-            print('Sequence is skipped because it is not long enough.')
+#
+#     # for each sequence, draw fragments as needed
+#     for i, seq_record in enumerate(SeqIO.parse(input_file, 'fasta')):
+#         print('Building fragments for sequence {}...'.format(i))
+#
+#         # skip sequences which are shorter than sample_length
+#         seq_id, seq, seq_length = split_record(seq_record)
+#         if seq_length >= sample_length:
+#
+#             # draw fragments
+#             fragments = draw_fragments(seq, sample_length, coverage, random_seed)
+#
+#             # save fragments to file
+#             write_fragments_to_file(fragments, output_file)
+#         else:
+#             print('Sequence is skipped because it is not long enough.')
