@@ -150,9 +150,14 @@ def test_remove_invalid_frags__multiple_rows_left():
 
 def test_draw_fragments():
     record = SeqRecord(
-        Seq("actgCtgatGtctactgtac"),
+        Seq("actgCtgatGtctactgtac"),  # length of 20
         id="YP_025292.1")
     sample_length = 5
     coverage = 1
 
+    expected_n_frag = 4
+
     actual = sampling.draw_fragments(record, sample_length, coverage)
+
+    # check number of fragments
+    assert len(actual) == expected_n_frag
