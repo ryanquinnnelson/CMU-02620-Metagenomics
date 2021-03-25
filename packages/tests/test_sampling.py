@@ -1,6 +1,7 @@
 from Bio.Seq import Seq
 from packages.metagenomics import sampling
 import pytest
+import numpy as np
 
 
 def test__calc_number_fragments__whole_number():
@@ -100,9 +101,8 @@ def test__draw_fragments_for_sequence():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
     coverage = 1
-    seed = 42
 
-    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage, seed)
+    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage)
 
     # check number of fragments
     assert len(actual) == 4
@@ -117,9 +117,26 @@ def test__draw_fragments_for_sequence__seq_too_short():
     seq = Seq("act")  # length of 20
     sample_length = 5
     coverage = 1
-    seed = 0
 
-    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage, seed)
+    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage)
 
     # check number of fragments
     assert actual is None
+
+
+def test__build_taxid_array():
+    taxid = 'NC_013451'
+    n_frag = 2
+    expected = np.array([b'NC_013451', b'NC_013451'])
+    actual = sampling._build_taxid_array(n_frag, taxid)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test__build_fragments_output_for_sequence():
+    fragments = np.array([b'atcg', b'gtcc'])
+    taxid = 'NC_013451'
+    expected = np.array([[b'NC_013451', b'atcg'],
+                         [b'NC_013451', b'gtcc']])
+    actual = sampling._build_fragment_rows_for_sequence(fragments, taxid)
+    np.testing.assert_array_equal(actual, expected)
+

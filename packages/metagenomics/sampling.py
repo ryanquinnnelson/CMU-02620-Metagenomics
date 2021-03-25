@@ -2,6 +2,7 @@
 Defines sampling functionality for metagenomics data.
 """
 import numpy as np
+from Bio import SeqIO
 
 
 # tested
@@ -103,7 +104,7 @@ def _build_fragment_array(seq, sample_length, n_frag):
 
 
 # tested
-def _draw_fragments_for_sequence(seq, sample_length, coverage, seed):
+def _draw_fragments_for_sequence(seq, sample_length, coverage):
     """
     Draws number of samples from sequence in order to achieve required coverage. Follows general sampling procedure
     laid out by Vervier et al. See https://arxiv.org/abs/1505.06915.
@@ -117,9 +118,6 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage, seed):
             Returns None if sequence length is less than sample length.
     """
 
-    # initialize random seed
-    np.random.seed(seed)
-
     # sample fragments if possible
     seq_length = len(seq)
     if seq_length >= sample_length:
@@ -129,3 +127,44 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage, seed):
         fragments = None
 
     return fragments
+
+
+# tested
+def _build_taxid_array(n_frag, taxid):
+    taxid_length = len(taxid)
+    taxids = np.chararray((n_frag,), itemsize=taxid_length)
+    taxids[:] = taxid
+
+    return taxids
+
+
+# tested
+def _build_fragment_rows_for_sequence(fragments, taxid):
+    if fragments:
+        n_frag = len(fragments)
+        taxids = _build_taxid_array(n_frag, taxid)
+        rows = np.column_stack((taxids, fragments))
+    else:
+        rows = None
+    return rows
+
+
+# Todo - process sequences in parallel.
+def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
+
+    if seed:
+        np.random.seed(seed)  # initialize random seed
+
+    # read in taxids
+    taxids = np.loadtxt(taxid_file)
+
+    # read in sequences
+    for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):
+        # build fragment data
+        fragments = _draw_fragments_for_sequence(seq_record.seq, sample_length, coverage)
+        rows = _build_fragment_rows_for_sequence(fragments, taxids[i])
+
+        # write fragment data to file
+        output_file = '{}/fragments-{}.npy'.format(output_dir, str(i).zfill(5))
+        with open(output_file, 'wb') as f:
+            np.save(f, rows)
