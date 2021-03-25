@@ -1,88 +1,69 @@
 from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 from packages.metagenomics import sampling
-import numpy as np
 import pytest
 
 
-# def test_split_record():
-#     record = SeqRecord(
-#         Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF"),
-#         id="YP_025292.1",
-#         name="HokC",
-#         description="toxic membrane protein, small")
-#
-#     expected_id = "YP_025292.1"
-#     expected_seq = Seq("MKQHKAMIVALIVICITAVVAALVTRKDLCEVHIRTGQTEVAVF")
-#     expected_seq_length = 44
-#
-#     actual_id, actual_seq, actual_seq_length = sampling.split_record(record)
-#     assert actual_id == expected_id
-#     assert actual_seq == expected_seq
-#     assert actual_seq_length == expected_seq_length
-#
-#
-def test_calc_number_fragments__whole_number():
+def test__calc_number_fragments__whole_number():
     coverage = 0.1
     sample_length = 200
     sequence_length = 2000
     expected = 1.0
-    actual = sampling.calc_number_fragments(sequence_length, coverage, sample_length)
+    actual = sampling._calc_number_fragments(sequence_length, coverage, sample_length)
     assert actual == expected
 
 
-def test_calc_number_fragments__rounding_up():
+def test__calc_number_fragments__rounding_up():
     coverage = 0.051
     sample_length = 200
     sequence_length = 2000
     expected = 1.0
-    actual = sampling.calc_number_fragments(sequence_length, coverage, sample_length)
+    actual = sampling._calc_number_fragments(sequence_length, coverage, sample_length)
     assert actual == expected
 
 
-def test_calc_number_fragments__rounding_down():
+def test__calc_number_fragments__rounding_down():
     coverage = 0.05
     sample_length = 200
     sequence_length = 2000
     expected = 0.0
-    actual = sampling.calc_number_fragments(sequence_length, coverage, sample_length)
+    actual = sampling._calc_number_fragments(sequence_length, coverage, sample_length)
     assert actual == expected
 
 
-def test_get_random_position():
+def test__get_random_position():
     seq_length = 7
     sample_length = 3
 
     for i in range(1000):
-        actual_start_pos = sampling.get_random_position(seq_length, sample_length)
+        actual_start_pos = sampling._get_random_position(seq_length, sample_length)
 
         assert 0 <= actual_start_pos <= 4
 
 
-def test_fragment_is_valid__success():
+def test__fragment_is_valid__success():
     frag = 'aactg'
-    assert sampling.fragment_is_valid(frag)
+    assert sampling._fragment_is_valid(frag)
 
 
-def test_fragment_is_valid__failure():
+def test__fragment_is_valid__failure():
     frag = 'aacth'
-    assert sampling.fragment_is_valid(frag) is False
+    assert sampling._fragment_is_valid(frag) is False
 
 
-def test_draw_fragment():
+def test__draw_fragment():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
-    actual = sampling.draw_fragment(seq, sample_length)
+    actual = sampling._draw_fragment(seq, sample_length)
     assert len(actual) == 5
     assert actual in seq.lower()
 
 
-def test_build_fragment_array__valid_sequence():
+def test__build_fragment_array__valid_sequence():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
     n_frag = 4
 
-    actual = sampling.build_fragment_array(seq, sample_length, n_frag)
+    actual = sampling._build_fragment_array(seq, sample_length, n_frag)
 
     # check number of fragments
     assert len(actual) == n_frag
@@ -93,12 +74,12 @@ def test_build_fragment_array__valid_sequence():
         assert all(c in allowed for c in frag.decode('utf-8'))
 
 
-def test_build_fragment_array__invalid_sequence():
+def test__build_fragment_array__invalid_sequence():
     seq = Seq("actgCtgatUtctactgtac")  # length of 20
     sample_length = 5
     n_frag = 4
 
-    actual = sampling.build_fragment_array(seq, sample_length, n_frag)
+    actual = sampling._build_fragment_array(seq, sample_length, n_frag)
 
     # check number of fragments
     assert len(actual) == n_frag
@@ -107,12 +88,12 @@ def test_build_fragment_array__invalid_sequence():
         assert 'u' not in frag.decode('utf-8')
 
 
-def test_build_fragment_array__infinite_loop():
+def test__build_fragment_array__infinite_loop():
     seq = Seq("aUtgCUgatUtctUctgUac")  # no valid fragments
     sample_length = 5
     n_frag = 4
     with pytest.raises(ValueError):
-        sampling.build_fragment_array(seq, sample_length, n_frag)
+        sampling._build_fragment_array(seq, sample_length, n_frag)
 
 
 def test_draw_fragments():

@@ -5,7 +5,7 @@ import numpy as np
 
 
 # tested
-def calc_number_fragments(seq_length, coverage, sample_length):
+def _calc_number_fragments(seq_length, coverage, sample_length):
     """
     Calculates the number of fragments to be randomly sampled from the given sequence in order to
     achieve desired coverage. Uses formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
@@ -21,7 +21,7 @@ def calc_number_fragments(seq_length, coverage, sample_length):
 
 
 # tested
-def get_random_position(seq_length, sample_length):
+def _get_random_position(seq_length, sample_length):
     """
     Selects a random start position for a sample, considering the length of the sequence and the length of the sample.
 
@@ -33,7 +33,7 @@ def get_random_position(seq_length, sample_length):
 
 
 # tested
-def fragment_is_valid(frag):
+def _fragment_is_valid(frag):
     """
     Determines if fragment meets criteria required to be valid. Currently, the criteria is that all letters in the
     fragment are lowercase and encode DNA nucleotides i.e. {a,c,t,g}.
@@ -46,7 +46,7 @@ def fragment_is_valid(frag):
 
 
 # tested
-def draw_fragment(seq, sample_length):
+def _draw_fragment(seq, sample_length):
     """
     Chooses random subsequence of given sample_length within given sequence.
 
@@ -56,7 +56,7 @@ def draw_fragment(seq, sample_length):
     """
     # choose random subsequence
     seq_length = len(seq)
-    start_pos = get_random_position(seq_length, sample_length)
+    start_pos = _get_random_position(seq_length, sample_length)
 
     # get fragment
     one_after_end = start_pos + sample_length
@@ -65,7 +65,7 @@ def draw_fragment(seq, sample_length):
 
 
 # tested
-def build_fragment_array(seq, sample_length, n_frag):
+def _build_fragment_array(seq, sample_length, n_frag):
     """
     Draws required number of valid fragments from sequence and constructs array of results.
     Raises ValueError if too many invalid sequences are sampled in order to prevent an infinite loop in the case that
@@ -84,10 +84,10 @@ def build_fragment_array(seq, sample_length, n_frag):
     while n_valid < n_frag:
 
         # draw random fragment
-        frag = draw_fragment(seq, sample_length)
+        frag = _draw_fragment(seq, sample_length)
 
         # determine whether to save or discard fragment
-        if fragment_is_valid(frag):
+        if _fragment_is_valid(frag):
             fragments[n_valid] = frag  # save in array
             n_valid += 1
         else:
@@ -123,8 +123,8 @@ def draw_fragments(seq, sample_length, coverage, seed):
     # sample fragments if possible
     seq_length = len(seq)
     if seq_length >= sample_length:
-        n_frag = calc_number_fragments(seq_length, coverage, sample_length)
-        fragments = build_fragment_array(seq, sample_length, n_frag)
+        n_frag = _calc_number_fragments(seq_length, coverage, sample_length)
+        fragments = _build_fragment_array(seq, sample_length, n_frag)
     else:
         fragments = None
 

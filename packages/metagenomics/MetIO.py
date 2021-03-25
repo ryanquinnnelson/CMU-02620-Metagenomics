@@ -2,6 +2,23 @@
 Defines input/output functionality for metagenomics package.
 """
 import numpy as np
+
+# tested
+def build_taxid_array(n_frag, taxid):
+    taxid_length = len(taxid)
+    taxids = np.chararray((n_frag,), itemsize=taxid_length)
+    taxids[:] = taxid
+
+    return taxids
+
+
+# tested
+def build_output_rows(fragments, taxid):
+    n_frag = len(fragments)
+    taxids = build_taxid_array(n_frag, taxid)
+    return np.column_stack((taxids, fragments))
+
+
 # def write_to_file(filename, output):
 #
 #     with open(filename, "ba") as output_handle:
@@ -52,17 +69,3 @@ import numpy as np
 # #             print('Sequence is skipped because it is not long enough.')
 #
 #
-# tested
-def build_taxid_array(n_frag, taxid):
-    taxid_length = len(taxid)
-    taxids = np.chararray((n_frag,), itemsize=taxid_length)
-    taxids[:] = taxid
-
-    return taxids
-
-
-# tested
-def build_output_rows(fragments, taxid):
-    n_frag = len(fragments)
-    taxids = build_taxid_array(n_frag, taxid)
-    return np.column_stack((taxids, fragments))
