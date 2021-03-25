@@ -82,7 +82,6 @@ def convert_frag_seq(frag_seq):
 
 # tested
 def fragment_is_valid(frag):
-    print(frag)
     allowed = [b'a', b'c', b't', b'g']
     return all(c in allowed for c in frag)
 
@@ -145,11 +144,13 @@ def remove_invalid_frags(charar):
     return charar
 
 
+# tested
 # based on code from paper
 def draw_fragments(seq_record, sample_length, coverage):
     """
     Assumes sequence is at least as long as than sample_length.
     Todo - Replace invalid samples with valid samples.
+    Todo - Consider using numeric array to represent fragments instead of chars. (more space efficient)
 
     :param seq_record: sequence to be sampled, expecting Bio.SeqRecord.SeqRecord
     :param sample_length: int, length of fragments to be drawn
@@ -173,7 +174,7 @@ def draw_fragments(seq_record, sample_length, coverage):
         frag = convert_frag_seq(frag_seq)
 
         # validate fragment doesn't contain unexpected characters
-        is_valid = fragment_is_valid(frag[:-1])  # remove validation column
+        is_valid = fragment_is_valid(frag[:-1])  # remove validation column for this check
 
         # update fragment array with chosen fragment
         frag_array = update_frag_array(frag, frag_array, is_valid, i)

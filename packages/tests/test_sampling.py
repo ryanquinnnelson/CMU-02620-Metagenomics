@@ -161,3 +161,9 @@ def test_draw_fragments():
 
     # check number of fragments
     assert len(actual) == expected_n_frag
+
+    for frag in actual.tolist():
+
+        # check that all fragments are lowercase
+        allowed = [b'a', b'c', b't', b'g']
+        assert all(c in allowed for c in frag)
