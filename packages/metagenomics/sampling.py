@@ -242,8 +242,7 @@ def _read_taxid_data(taxid_file):
 # tested
 def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
-    Todo - process sequences in parallel.
-    Todo - handle single taxid case
+    Todo - Redesign to process sequences in parallel.
     Output directory cannot exist.
 
     :param seq_file:

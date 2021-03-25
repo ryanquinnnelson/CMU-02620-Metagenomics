@@ -273,3 +273,45 @@ def test_generate_fragment_data__one_sequence(tmp_path):
     actual = np.load(expected_file)
     assert actual.shape == (12, 2)
     assert actual[0][1] == b'1280'
+
+
+def test_read_fragments__one_file(tmp_path):
+    # create mockup files
+    d = tmp_path  # use temp directory
+
+    f1 = np.array([[b'atcg', b'NC_013451'],
+                   [b'gtcc', b'NC_013451']])
+
+    output_file = d / 'fragment-00001.npy'
+    with open(output_file, 'wb') as f:
+        np.save(f, f1)
+
+    actual = sampling.read_fragments(str(d), 'fragment*.npy')
+    np.testing.assert_array_equal(actual, f1)
+
+
+def test_read_fragments__multiple_files(tmp_path):
+    # create mockup files
+    d = tmp_path  # use temp directory
+
+    f1 = np.array([[b'atcg', b'10312'],
+                   [b'gtcc', b'10312']])
+
+    f2 = np.array([[b'gggg', b'55921'],
+                   [b'aaaa', b'55921']])
+
+    output_file1 = d / 'fragment-00001.npy'
+    with open(output_file1, 'wb') as f:
+        np.save(f, f1)
+
+    output_file2 = d / 'fragment-00002.npy'
+    with open(output_file2, 'wb') as f:
+        np.save(f, f2)
+
+    expected = np.array([[b'atcg', b'10312'],
+                         [b'gtcc', b'10312'],
+                         [b'gggg', b'55921'],
+                         [b'aaaa', b'55921']])
+
+    actual = sampling.read_fragments(str(d), 'fragment*.npy')
+    np.testing.assert_array_equal(actual, expected)
