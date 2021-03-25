@@ -142,20 +142,3 @@ def test_draw_fragments__seq_too_short():
 
     # check number of fragments
     assert actual is None
-
-
-def test_build_taxid_array():
-    taxid = 'NC_013451'
-    n_frag = 2
-    expected = np.array([b'NC_013451', b'NC_013451'])
-    actual = sampling.build_taxid_array(n_frag, taxid)
-    np.testing.assert_array_equal(actual, expected)
-
-
-def test_build_output_rows():
-    fragments = np.array([b'atcg', b'gtcc'])
-    taxid = 'NC_013451'
-    expected = np.array([[b'NC_013451', b'atcg'],
-                         [b'NC_013451', b'gtcc']])
-    actual = sampling.build_output_rows(fragments, taxid)
-    np.testing.assert_array_equal(actual, expected)
