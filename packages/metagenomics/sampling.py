@@ -115,7 +115,7 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage):
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
     :param seed: random seed, for reproducibility
     :return: n x 1 array, where n is the number of fragments drawn from sample in order to meet required coverage.
-            Returns None if sequence length is less than sample length.
+            Returns empty array if sequence length is less than sample length.
     """
 
     # sample fragments if possible
@@ -124,7 +124,7 @@ def _draw_fragments_for_sequence(seq, sample_length, coverage):
         n_frag = _calc_number_fragments(seq_length, coverage, sample_length)
         fragments = _build_fragment_array(seq, sample_length, n_frag)
     else:
-        fragments = None
+        fragments = np.empty(0,)
 
     return fragments
 
@@ -140,12 +140,9 @@ def _build_taxid_array(n_frag, taxid):
 
 # tested
 def _build_fragment_rows_for_sequence(fragments, taxid):
-    if fragments:
-        n_frag = len(fragments)
-        taxids = _build_taxid_array(n_frag, taxid)
-        rows = np.column_stack((taxids, fragments))
-    else:
-        rows = None
+    n_frag = len(fragments)
+    taxids = _build_taxid_array(n_frag, taxid)
+    rows = np.column_stack((taxids, fragments))
     return rows
 
 
@@ -162,9 +159,11 @@ def draw_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, se
     for i, seq_record in enumerate(SeqIO.parse(seq_file, 'fasta')):
         # build fragment data
         fragments = _draw_fragments_for_sequence(seq_record.seq, sample_length, coverage)
-        rows = _build_fragment_rows_for_sequence(fragments, taxids[i])
 
-        # write fragment data to file
-        output_file = '{}/fragments-{}.npy'.format(output_dir, str(i).zfill(5))
-        with open(output_file, 'wb') as f:
-            np.save(f, rows)
+        if len(fragments) > 0:
+            rows = _build_fragment_rows_for_sequence(fragments, taxids[i])
+
+            # write fragment data to file
+            output_file = '{}/fragments-{}.npy'.format(output_dir, str(i).zfill(5))
+            with open(output_file, 'wb') as f:
+                np.save(f, rows)

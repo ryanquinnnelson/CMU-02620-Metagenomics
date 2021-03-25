@@ -2,6 +2,7 @@ from Bio.Seq import Seq
 from packages.metagenomics import sampling
 import pytest
 import numpy as np
+import io
 
 
 def test__calc_number_fragments__whole_number():
@@ -121,7 +122,7 @@ def test__draw_fragments_for_sequence__seq_too_short():
     actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage)
 
     # check number of fragments
-    assert actual is None
+    assert len(actual) == 0
 
 
 def test__build_taxid_array():
@@ -132,7 +133,7 @@ def test__build_taxid_array():
     np.testing.assert_array_equal(actual, expected)
 
 
-def test__build_fragments_output_for_sequence():
+def test__build_fragment_rows_for_sequence():
     fragments = np.array([b'atcg', b'gtcc'])
     taxid = 'NC_013451'
     expected = np.array([[b'NC_013451', b'atcg'],
@@ -140,3 +141,34 @@ def test__build_fragments_output_for_sequence():
     actual = sampling._build_fragment_rows_for_sequence(fragments, taxid)
     np.testing.assert_array_equal(actual, expected)
 
+
+# def test_draw_fragments(tmp_path):
+#
+#     seq_file = tmp_path + '/tmp.seq'
+#     taxid_file = tmp_path + '/tmp.taxid'
+#     print(tmp_path)
+#     # generate temporary files
+#     seq_contents = '>NC_013451\nagcaagcaccaacagcaatacatatagcctaaaggttccatgtccaaaaggaaattggaa'
+#     taxid_contents = '1280'
+#     with open(seq_file, 'w') as output_handle:
+#         output_handle.write(seq_contents)
+#
+#     with open(taxid_file, 'w') as output_handle:
+#         output_handle.write(taxid_contents)
+#
+#     # read in files
+#     with open(seq_file, 'r') as output_handle:
+#         print(output_handle.read())
+#
+#     with open(taxid_file, 'r') as output_handle:
+#         print(output_handle.read())
+#
+#     1/0
+
+
+
+
+
+    # output_dir = ''
+    # sample_length = 5
+    # coverage = 1
