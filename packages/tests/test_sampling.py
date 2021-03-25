@@ -275,6 +275,44 @@ def test_generate_fragment_data__one_sequence(tmp_path):
     assert actual[0][1] == b'1280'
 
 
+def test_generate_fragment_data__multiple_sequences(tmp_path):
+    # create mockup files
+    d = tmp_path  # use temp directory
+
+    # seq file
+    seq_file = d / 'tmp.seq'
+    seq_contents = '>NC_013451\nagcaagcaccaacagcaatacatatagcctaaaggttccatgtccaaaaggaaattggaa\n' \
+                   + '>NC_006375\naattcctagtttggcgacccggaacacgtgagttaatcttgaatattcgtatttactaga'
+
+    with open(seq_file, 'w') as output_handle:
+        output_handle.write(seq_contents)
+
+    # taxid file
+    taxid_file = d / 'tmp.taxid'
+    taxid_contents = '1280\n88411'
+    with open(taxid_file, 'w') as output_handle:
+        output_handle.write(taxid_contents)
+
+    # other parameters
+    output_dir = d / "sampling"
+    sample_length = 5
+    coverage = 1
+
+    # run function
+    sampling.generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage)
+
+    # read in written file
+    expected_file1 = output_dir / 'fragments-00000.npy'
+    actual = np.load(expected_file1)
+    assert actual.shape == (12, 2)
+    assert actual[0][1] == b'1280'
+
+    expected_file2 = output_dir / 'fragments-00001.npy'
+    actual = np.load(expected_file2)
+    assert actual.shape == (12, 2)
+    assert actual[0][1] == b'88411'
+
+
 def test_read_fragments__one_file(tmp_path):
     # create mockup files
     d = tmp_path  # use temp directory
