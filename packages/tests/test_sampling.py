@@ -96,13 +96,13 @@ def test__build_fragment_array__infinite_loop():
         sampling._build_fragment_array(seq, sample_length, n_frag)
 
 
-def test_draw_fragments():
+def test__draw_fragments_for_sequence():
     seq = Seq("actgCtgatgtctactgtac")  # length of 20
     sample_length = 5
     coverage = 1
     seed = 42
 
-    actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
+    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage, seed)
 
     # check number of fragments
     assert len(actual) == 4
@@ -113,13 +113,13 @@ def test_draw_fragments():
         assert all(c in allowed for c in frag.decode('utf-8'))
 
 
-def test_draw_fragments__seq_too_short():
+def test__draw_fragments_for_sequence__seq_too_short():
     seq = Seq("act")  # length of 20
     sample_length = 5
     coverage = 1
     seed = 0
 
-    actual = sampling.draw_fragments(seq, sample_length, coverage, seed)
+    actual = sampling._draw_fragments_for_sequence(seq, sample_length, coverage, seed)
 
     # check number of fragments
     assert actual is None

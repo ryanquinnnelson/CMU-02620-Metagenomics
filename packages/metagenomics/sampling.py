@@ -103,7 +103,7 @@ def _build_fragment_array(seq, sample_length, n_frag):
 
 
 # tested
-def draw_fragments(seq, sample_length, coverage, seed):
+def _draw_fragments_for_sequence(seq, sample_length, coverage, seed):
     """
     Draws number of samples from sequence in order to achieve required coverage. Follows general sampling procedure
     laid out by Vervier et al. See https://arxiv.org/abs/1505.06915.

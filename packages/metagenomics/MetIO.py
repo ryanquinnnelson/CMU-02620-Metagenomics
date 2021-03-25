@@ -3,8 +3,9 @@ Defines input/output functionality for metagenomics package.
 """
 import numpy as np
 
+
 # tested
-def build_taxid_array(n_frag, taxid):
+def _build_taxid_array(n_frag, taxid):
     taxid_length = len(taxid)
     taxids = np.chararray((n_frag,), itemsize=taxid_length)
     taxids[:] = taxid
@@ -13,10 +14,23 @@ def build_taxid_array(n_frag, taxid):
 
 
 # tested
-def build_output_rows(fragments, taxid):
+def _build_output_rows(fragments, taxid):
     n_frag = len(fragments)
-    taxids = build_taxid_array(n_frag, taxid)
+    taxids = _build_taxid_array(n_frag, taxid)
     return np.column_stack((taxids, fragments))
+
+
+
+def build_all_fragments(seq_file, output_file):
+    pass
+
+
+
+
+
+
+
+
 
 
 # def write_to_file(filename, output):
