@@ -1,7 +1,17 @@
 """
 Defines encoding functionality for metagenomics data.
-Todo - Redesign splitting to instead slice k character array columns and use column_stack to form k-mers.
+Todo - Redesign splitting to instead slice k character array columns and use np.char.add() to form k-mers.
      (This should be more efficient.)
+
+    a = np.array([  [b'a'],
+                    [b'c']])
+
+    b = np.array([  [b'b'],
+                    [b'd']])
+
+    np.char.add(a,b)
+    >>> array([[b'ab'],
+    >>>        [b'cd']], dtype='|S2')
 """
 import numpy as np
 import math
