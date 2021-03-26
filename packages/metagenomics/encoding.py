@@ -1,5 +1,7 @@
 """
 Defines encoding functionality for metagenomics data.
+Todo - Redesign splitting to instead slice k character array columns and use column_stack to form k-mers.
+     (This should be more efficient.)
 """
 import numpy as np
 import math
