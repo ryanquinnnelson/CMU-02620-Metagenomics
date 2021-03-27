@@ -1,6 +1,5 @@
 """
 Defines sampling functionality for metagenomics data.
-Todo - Redesign as single character array
 """
 import numpy as np
 from Bio import SeqIO
@@ -17,6 +16,8 @@ def _calc_number_fragments(seq_length, coverage, sample_length):
     The difference with the formula used here is that fractional n_frag is always rounded up:
 
     n_frag = ceil( S * C / L), where S is sequence length, C is coverage, and L is sample length
+
+    Todo - determine if n_frag really achieves desired coverage
 
     :param seq_length: int, length of sequence to be sampled
     :param coverage: float, desired coverage
@@ -253,7 +254,8 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
     """
     Generates random fragments for each sequence in the provided file to achieve the desired coverage.
     For each sequence, writes a binary numpy file of fragments and matching taxids to the output directory.
-    Todo - Redesign to process sequences in parallel.
+    Todo - Redesign to process sequences in parallel. Each sequence already produces its own fragment file (in
+            anticipation of parallelization). Each sequence could be given its own thread and run simultaneously.
 
     :param seq_file: path to sequences file
     :param taxid_file: path to taxid file
