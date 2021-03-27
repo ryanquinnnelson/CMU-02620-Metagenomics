@@ -1,5 +1,6 @@
 """
-Defines encoding functionality for metagenomics data.
+Defines encoding functionality for metagenomics data generated using the sampling2 module.
+Grouping of data into kmers is performed using vector operations.
 """
 import numpy as np
 import math
@@ -23,6 +24,7 @@ def _get_kmer_start(k, i):
 def _concatenate_cols(cols):
     """
     Concatenates the contents of all columns together into a single column.
+    Todo - Find a way to concatenate more than two columns together in a single operation.
 
     :param cols: n x c array, where c is the number of columns to concatenate
     :return: n x 1 array, concatenated contents
@@ -62,14 +64,20 @@ def _group_kmers(fragments, k):
     """
     Groups kmers in place and returns array with kmers and taxids.
     Removes partial kmers.
+    Todo - Could make this more efficient by parallelizing grouping via divide and conquer. Divide rows into
+            desired number of groups. For each group, build kmers for those rows only (this can be done in parallel).
+            Append rows back together at the end.
 
     :param fragments: n x (L+1) array, where n is the number of fragments and L is the sample length
     :param k: int, length of kmer
     :return: (n x n_kmer array, n x 1 array) Tuple representing (kmers, taxids)
             where n_kmer is the number of whole kmers which can be formed from the sample length
     """
-    # build kmers
+    n_fragments = len(fragments)
     n_kmers = _calculate_number_kmers(fragments, k)
+    kmers = np.chararray((n_fragments, n_kmers), itemsize=k)
+
+    # build kmers
     for i in range(n_kmers):
         # grab columns for current kmer
         start_idx = _get_kmer_start(k, i)
@@ -79,13 +87,13 @@ def _group_kmers(fragments, k):
         # concatenate kmer columns
         combined = _concatenate_cols(kmer_cols)
 
-        # replace ith column in fragments with concatenated values
+        # replace ith column in kmers with concatenated values
         # ith column now represents ith kmer
-        fragments[:, i] = combined[:, 0]
+        kmers[:, i] = combined[:, 0]
 
-    # retain kmers columns and taxid column
-    kmers = fragments[:, :n_kmers]
+    # get taxid column
     taxids = fragments[:, -1]
+
     return kmers, taxids
 
 

@@ -1,17 +1,6 @@
 """
-Defines encoding functionality for metagenomics data.
-Todo - Redesign splitting to instead slice k character array columns and use np.char.add() to form k-mers.
-     (This should be more efficient.)
-
-    a = np.array([  [b'a'],
-                    [b'c']])
-
-    b = np.array([  [b'b'],
-                    [b'd']])
-
-    np.char.add(a,b)
-    >>> array([[b'ab'],
-    >>>        [b'cd']], dtype='|S2')
+Defines encoding functionality for metagenomics data generated using the sampling module.
+Grouping of data into kmers is performed using single loop and non-vectorized operations.
 """
 import numpy as np
 import math

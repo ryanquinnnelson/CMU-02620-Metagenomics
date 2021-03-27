@@ -1,6 +1,6 @@
 """
 Defines sampling functionality for metagenomics data.
-Todo - Redesign as single character array
+Fragments are stored as binary character arrays with each letter in the fragment sequence having its own column.
 """
 import numpy as np
 from Bio import SeqIO
@@ -18,14 +18,16 @@ def _calc_number_fragments(seq_length, coverage, sample_length):
 
     n_frag = ceil( S * C / L), where S is sequence length, C is coverage, and L is sample length
 
+    Todo - determine if n_frag really achieves desired coverage
+
     :param seq_length: int, length of sequence to be sampled
     :param coverage: float, desired coverage
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
     :param sample_length: int, length of samples
     :return: int, number of fragments to sample
     """
-    n_frag = seq_length * coverage / sample_length
-    return math.ceil(n_frag)
+    n_frag = math.ceil(seq_length * coverage / sample_length)
+    return n_frag
 
 
 # tested
@@ -253,7 +255,11 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
     """
     Generates random fragments for each sequence in the provided file to achieve the desired coverage.
     For each sequence, writes a binary numpy file of fragments and matching taxids to the output directory.
-    Todo - Redesign to process sequences in parallel.
+    Each row in an output file represents a single fragment.
+    Each letter in the fragment sequence is given its own column.
+    The final column in each row contains the taxid for that fragment.
+    Todo - Redesign to process sequences in parallel. Each sequence already produces its own fragment file (in
+            anticipation of parallelization). Each sequence could be given its own thread and run simultaneously.
 
     :param seq_file: path to sequences file
     :param taxid_file: path to taxid file
