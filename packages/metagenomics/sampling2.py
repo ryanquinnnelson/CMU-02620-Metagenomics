@@ -149,6 +149,7 @@ def _build_fragment_array(seq, sample_length, coverage, seed=None):
 def _build_taxid_array(n_frag, taxid):
     """
     Generates an array equal in length to the fragment array and fills it with the same taxid value for all cells.
+    Todo - move reshaping into here
 
     :param n_frag:  int, number of fragments to sample
     :param taxid: str, species for the sequence
@@ -282,6 +283,7 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
         _write_fragments(results, output_dir, i)
 
 
+# tested
 def read_fragments(input_dir, pattern):
     """
     Reads all files in the input directory which follow given pattern and combines all data into a single array.
