@@ -133,3 +133,6 @@ dmypy.json
 
 # mac-generated
 .DS_Store
+
+# test data
+data/sampling
