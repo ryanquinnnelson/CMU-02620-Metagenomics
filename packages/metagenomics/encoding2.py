@@ -1,5 +1,6 @@
 """
-Defines encoding functionality for metagenomics data.
+Defines encoding functionality for metagenomics data generated using the sampling2 module.
+Grouping of data into kmers is performed using vector operations.
 """
 import numpy as np
 import math

@@ -1,5 +1,6 @@
 """
 Defines sampling functionality for metagenomics data.
+Fragments are stored as binary character arrays with each letter in the fragment sequence having its own column.
 """
 import numpy as np
 from Bio import SeqIO
@@ -254,6 +255,9 @@ def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, cove
     """
     Generates random fragments for each sequence in the provided file to achieve the desired coverage.
     For each sequence, writes a binary numpy file of fragments and matching taxids to the output directory.
+    Each row in an output file represents a single fragment.
+    Each letter in the fragment sequence is given its own column.
+    The final column in each row contains the taxid for that fragment.
     Todo - Redesign to process sequences in parallel. Each sequence already produces its own fragment file (in
             anticipation of parallelization). Each sequence could be given its own thread and run simultaneously.
 
