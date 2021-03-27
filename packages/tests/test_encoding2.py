@@ -100,7 +100,7 @@ def test__group_kmers__full_kmers():
     np.testing.assert_array_equal(y_actual, y_expected)
 
 
-def test__group_kmers__large_scale():
+def test__group_kmers__k_larger_than_itemsize():
     fragments = np.array([[b't', b'g', b'a', b'a', b'a', b'a', b'a', b'g', b't', b'g', b'g',
                            b'c', b'c', b'c', b'g', b'g', b'g', b'c', b'g', b'a', b't', b't',
                            b't', b'a', b'c', b'g', b'a', b'a', b'g', b'g', b'c', b't', b't',
