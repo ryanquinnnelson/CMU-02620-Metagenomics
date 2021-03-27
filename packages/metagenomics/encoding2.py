@@ -77,7 +77,8 @@ def _group_kmers(fragments, k):
 
     :param fragments: n x (L+1) array, where n is the number of fragments and L is the sample length
     :param k: int, length of kmer
-    :return: n x (n_kmer + 1), where n_kmer is the number of whole kmers which can be formed from the sample length
+    :return: (n x n_kmer array, n x 1 array) Tuple representing (kmers, taxids)
+            where n_kmer is the number of whole kmers which can be formed from the sample length
     """
     # build kmers
     n_kmers = _calculate_number_kmers(fragments, k)
@@ -94,31 +95,26 @@ def _group_kmers(fragments, k):
         # ith column now represents ith kmer
         fragments[:, i] = combined[:, 0]
 
-    # delete extra columns between kmer columns and last (taxid) column
-    # these columns have been concatenated into kmers and are no longer needed
-    extra_col_idx = _get_list_extra_columns(fragments, n_kmers)
-    grouped = np.delete(fragments, extra_col_idx, axis=1)
-    return grouped
+    # retain kmers columns and taxid column
+    kmers = fragments[:, :n_kmers]
+    taxids = fragments[:, -1]
+    return kmers, taxids
 
 
 # tested
 def encode_fragment_dataset(fragments, k):
     """
-    Converts fragments into k-mers and encodes the data using one-hot encoding.
+    Converts fragments into k-mers and encodes the kmers using one-hot encoding.
 
     :param fragments: fragment to be split
     :param k: size of elements fragment should be split into
-    :return: sparse matrix
+    :return: (sparse matrix, n x 1 array) Tuple representing (encoded kmers, taxids)
     """
 
     # generate k_mers
-    data = _group_kmers(fragments, k).astype('str')  # convert binary data to string
-
-    # split data into kmers and taxid
-    X = np.delete(data, -1, axis=1)
-    y = data[:, -1]
+    X, y = _group_kmers(fragments, k)  # convert binary data to string
 
     # encode data using one-hot encoding
-    X_enc = OneHotEncoder().fit_transform(X)
+    X_enc = OneHotEncoder().fit_transform(X.astype('str'))
 
-    return X_enc, y
+    return X_enc, y.astype('str')

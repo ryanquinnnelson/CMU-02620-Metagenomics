@@ -71,12 +71,15 @@ def test__group_kmers__partial_kmer():
 
     k = 2
 
-    expected = np.array([[b'ga', b'tg', b'128221'],
-                         [b'gc', b'tg', b'128221'],
-                         [b'ta', b'ct', b'128221'],
-                         [b'ct', b'gt', b'128221']])
-    actual = encoding2._group_kmers(fragments, k)
-    np.testing.assert_array_equal(actual, expected)
+    X_expected = np.array([[b'ga', b'tg'],
+                           [b'gc', b'tg'],
+                           [b'ta', b'ct'],
+                           [b'ct', b'gt']])
+    y_expected = np.array([b'128221', b'128221', b'128221', b'128221'])
+
+    X_actual, y_actual = encoding2._group_kmers(fragments, k)
+    np.testing.assert_array_equal(X_actual, X_expected)
+    np.testing.assert_array_equal(y_actual, y_expected)
 
 
 def test__group_kmers__full_kmers():
@@ -87,12 +90,14 @@ def test__group_kmers__full_kmers():
 
     k = 3
 
-    expected = np.array([[b'gat', b'gta', b'128221'],
-                         [b'gct', b'gaa', b'128221'],
-                         [b'tac', b'tga', b'128221'],
-                         [b'ctg', b'taa', b'128221']])
-    actual = encoding2._group_kmers(fragments, k)
-    np.testing.assert_array_equal(actual, expected)
+    X_expected = np.array([[b'gat', b'gta'],
+                           [b'gct', b'gaa'],
+                           [b'tac', b'tga'],
+                           [b'ctg', b'taa']])
+    y_expected = np.array([b'128221', b'128221', b'128221', b'128221'])
+    X_actual, y_actual = encoding2._group_kmers(fragments, k)
+    np.testing.assert_array_equal(X_actual, X_expected)
+    np.testing.assert_array_equal(y_actual, y_expected)
 
 
 def test_encode_fragment_dataset():
