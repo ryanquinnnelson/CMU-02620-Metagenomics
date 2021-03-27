@@ -75,7 +75,7 @@ def _group_kmers(fragments, k):
     """
     n_fragments = len(fragments)
     n_kmers = _calculate_number_kmers(fragments, k)
-    kmers = np.chararray((n_fragments, n_kmers), itemsize=k)
+    kmers = np.chararray((n_fragments, n_kmers), itemsize=k)  # scaffold
 
     # build kmers
     for i in range(n_kmers):
@@ -87,7 +87,7 @@ def _group_kmers(fragments, k):
         # concatenate kmer columns
         combined = _concatenate_cols(kmer_cols)
 
-        # replace ith column in kmers with concatenated values
+        # replace ith column in kmers with concatenated kmer column vector
         # ith column now represents ith kmer
         kmers[:, i] = combined[:, 0]
 
@@ -101,6 +101,7 @@ def _group_kmers(fragments, k):
 def encode_fragment_dataset(fragments, k):
     """
     Converts fragments into k-mers and encodes the kmers using one-hot encoding.
+    Todo - Consider moving astype into internal methods
 
     :param fragments: fragment to be split
     :param k: size of elements fragment should be split into
@@ -108,7 +109,7 @@ def encode_fragment_dataset(fragments, k):
     """
 
     # generate k_mers
-    X, y = _group_kmers(fragments, k)  # convert binary data to string
+    X, y = _group_kmers(fragments, k)
 
     # encode data using one-hot encoding
     X_enc = OneHotEncoder().fit_transform(X.astype('str'))
