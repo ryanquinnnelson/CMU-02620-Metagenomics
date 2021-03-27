@@ -73,8 +73,11 @@ def _group_kmers(fragments, k):
     :return: (n x n_kmer array, n x 1 array) Tuple representing (kmers, taxids)
             where n_kmer is the number of whole kmers which can be formed from the sample length
     """
-    # build kmers
+    n_fragments = len(fragments)
     n_kmers = _calculate_number_kmers(fragments, k)
+    kmers = np.chararray((n_fragments, n_kmers),itemsize=k)
+
+    # build kmers
     for i in range(n_kmers):
         # grab columns for current kmer
         start_idx = _get_kmer_start(k, i)
@@ -84,13 +87,13 @@ def _group_kmers(fragments, k):
         # concatenate kmer columns
         combined = _concatenate_cols(kmer_cols)
 
-        # replace ith column in fragments with concatenated values
+        # replace ith column in kmers with concatenated values
         # ith column now represents ith kmer
-        fragments[:, i] = combined[:, 0]
+        kmers[:, i] = combined[:, 0]
 
-    # retain kmers columns and taxid column
-    kmers = fragments[:, :n_kmers]
+    # get taxid column
     taxids = fragments[:, -1]
+
     return kmers, taxids
 
 

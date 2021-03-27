@@ -100,11 +100,59 @@ def test__group_kmers__full_kmers():
     np.testing.assert_array_equal(y_actual, y_expected)
 
 
+def test__group_kmers__large_scale():
+    fragments = np.array([[b't', b'g', b'a', b'a', b'a', b'a', b'a', b'g', b't', b'g', b'g',
+                           b'c', b'c', b'c', b'g', b'g', b'g', b'c', b'g', b'a', b't', b't',
+                           b't', b'a', b'c', b'g', b'a', b'a', b'g', b'g', b'c', b't', b't',
+                           b'c', b'a', b'a', b'c', b'g', b'g', b'a', b'a', b'c', b't', b'c',
+                           b't', b't', b'g', b't', b'c', b't', b'g', b'c', b'g', b'a', b't',
+                           b'g', b'g', b'c', b't', b'a', b't', b'g', b'c', b'g', b'g', b'g',
+                           b't', b't', b'a', b'c', b'a', b'a', b't', b'c', b'a', b'c', b'a',
+                           b't', b't', b'c', b'c', b'g', b'c', b'c', b'a', b'g', b'g', b'g',
+                           b'a', b't', b't', b'c', b'g', b'g', b'c', b'g', b'g', b'g', b'c',
+                           b't', b'g', b'g', b'c', b't', b'g', b't', b't', b'g', b'g', b'g',
+                           b'c', b'g', b'c', b'a', b't', b'g', b'g', b'a', b'c', b'g', b'a',
+                           b'c', b'g', b'a', b'a', b'a', b'a', b't', b't', b't', b'g', b't',
+                           b'g', b'g', b'a', b't', b'g', b'g', b'c', b'a', b'c', b't', b'a',
+                           b'a', b't', b'g', b'g', b'a', b'a', b't', b't', b'g', b'a', b'g',
+                           b'a', b'g', b'c', b'c', b'a', b'a', b'a', b'g', b'g', b'a', b'g',
+                           b't', b'c', b't', b't', b'g', b'g', b'c', b'c', b'g', b'c', b'a',
+                           b'a', b'a', b't', b't', b't', b'g', b't', b'c', b'a', b'a', b'a',
+                           b'a', b'a', b'g', b't', b't', b'c', b'g', b'a', b't', b'c', b'a',
+                           b'a', b'c', b'1590']], dtype='|S6').reshape(1,-1)
+
+    k = 10
+    X_expected = np.array([[b'tgaaaaagtg',
+                            b'gcccgggcga',
+                            b'tttacgaagg',
+                            b'cttcaacgga',
+                            b'actcttgtct',
+                            b'gcgatggcta',
+                            b'tgcgggttac',
+                            b'aatcacattc',
+                            b'cgccagggat',
+                            b'tcggcgggct',
+                            b'ggctgttggg',
+                            b'cgcatggacg',
+                            b'acgaaaattt',
+                            b'gtggatggca',
+                            b'ctaatggaat',
+                            b'tgagagccaa',
+                            b'aggagtcttg',
+                            b'gccgcaaatt',
+                            b'tgtcaaaaag',
+                            b'ttcgatcaac']])
+    y_expected = np.array([b'1590'])
+    X_actual, y_actual = encoding2._group_kmers(fragments, k)
+    np.testing.assert_array_equal(X_actual, X_expected)
+    np.testing.assert_array_equal(y_actual, y_expected)
+
+
 def test_encode_fragment_dataset():
-    fragments = np.array([[b'g', b'a', b't', b'g', b't', b'a', b'128221'],
-                          [b'g', b'c', b't', b'g', b'a', b'a', b'128221'],
-                          [b't', b'a', b'c', b't', b'g', b'a', b'128221'],
-                          [b'c', b't', b'g', b't', b'a', b'a', b'128221']])
+    fragments = np.array([[b'g', b'a', b't', b'g', b't', b'a', b'1'],
+                          [b'g', b'c', b't', b'g', b'a', b'a', b'1'],
+                          [b't', b'a', b'c', b't', b'g', b'a', b'1'],
+                          [b'c', b't', b'g', b't', b'a', b'a', b'1']])
 
     k = 3
 
@@ -112,7 +160,7 @@ def test_encode_fragment_dataset():
                            [0., 0., 1., 0., 1., 0., 0., 0.],
                            [0., 0., 0., 1., 0., 0., 0., 1.],
                            [1., 0., 0., 0., 0., 0., 1., 0.]])
-    y_expected = np.array(['128221', '128221', '128221', '128221'])
+    y_expected = np.array(['1', '1', '1', '1'])
 
     X_actual, y_actual = encoding2.encode_fragment_dataset(fragments, k)
     np.testing.assert_array_equal(X_actual.toarray(), X_expected)
