@@ -6,16 +6,17 @@ import numpy as np
 from Bio import SeqIO
 from glob import glob
 import os
+import math
 
 
 # tested
 def _calc_number_fragments(seq_length, coverage, sample_length):
     """
     Calculates the number of fragments to be randomly sampled from the given sequence in order to
-    achieve desired coverage. Uses formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
+    achieve desired coverage. Derived from formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
+    The difference with the formula used here is that fractional n_frag is always rounded up:
 
-    Todo - consider revising to always round up. If fractional portion is required to cover sequence, then one
-       additional fragment can only improve coverage. In contrast, rounding down means expected coverage is not met.
+    n_frag = ceil( S * C / L), where S is sequence length, C is coverage, and L is sample length
 
     :param seq_length: int, length of sequence to be sampled
     :param coverage: float, desired coverage
@@ -24,7 +25,7 @@ def _calc_number_fragments(seq_length, coverage, sample_length):
     :return: int, number of fragments to sample
     """
     n_frag = seq_length * coverage / sample_length
-    return round(n_frag)
+    return math.ceil(n_frag)
 
 
 # tested
@@ -36,7 +37,11 @@ def _get_random_position(seq_length, sample_length):
     :param sample_length: int, length of samples
     :return: int, starting position defining subsequence of sample_length in sequence
     """
-    return np.random.randint(0, seq_length - sample_length)
+    if seq_length == sample_length:
+        idx = 0
+    else:
+        idx = np.random.randint(0, seq_length - sample_length)
+    return idx
 
 
 # tested
@@ -48,7 +53,7 @@ def _fragment_is_valid(frag):
     :param frag: str, fragment selected from sequence
     :return: True if fragment is valid, false otherwise.
     """
-    allowed = ['a', 'c', 't', 'g']
+    allowed = [b'a', b'c', b't', b'g']
     return all(c in allowed for c in frag)
 
 
@@ -59,7 +64,7 @@ def _draw_fragment(seq, sample_length):
 
     :param seq: Bio.Seq.Seq, sequence to be sampled
     :param sample_length: int, length of samples
-    :return: str, lowercase string representing subsequence
+    :return: L x 1 character array, where L is sample length
     """
     # choose random subsequence
     seq_length = len(seq)
@@ -68,7 +73,7 @@ def _draw_fragment(seq, sample_length):
     # get fragment
     one_after_end = start_pos + sample_length
     frag_seq = seq[start_pos:one_after_end].lower()
-    return str(frag_seq)
+    return np.array(frag_seq, dtype='|S1')
 
 
 # tested
@@ -81,9 +86,9 @@ def _draw_fragments(seq, sample_length, n_frag):
     :param seq: Bio.Seq.Seq, sequence to be sampled
     :param sample_length: int, length of samples
     :param n_frag: int, number of fragments to sample
-    :return: n_frag x 1 array, valid fragments drawn from sample
+    :return: n_frag x L character array, valid fragments drawn from sample
     """
-    fragments = np.chararray((n_frag,), itemsize=sample_length)  # scaffold for fragments
+    fragments = np.chararray((n_frag, sample_length))  # scaffold for fragments
 
     # draw fragments
     n_valid = 0
@@ -119,7 +124,7 @@ def _build_fragment_array(seq, sample_length, coverage, seed=None):
     :param coverage: float, desired coverage
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
     :param seed: int, random seed for reproducibility. Default is None.
-    :return: n x 1 array, where n is the number of fragments drawn from sample in order to meet required coverage.
+    :return: n x L character array, where n is the number of fragments drawn from sample and L is the sample length.
             Returns empty array if sequence length is less than sample length.
     """
 
@@ -157,13 +162,16 @@ def _build_taxid_array(n_frag, taxid):
 # tested
 def _combine_fragments_and_taxids(fragments, taxids):
     """
-    Stacks fragments array and taxids array into a single matrix.
+    Stacks fragments array and taxids array into a single matrix with the taxid for each fragment as the last column
+    in each row.
 
-    :param fragments: n_frag x 1 array, sampled fragments for the sequence
-    :param taxids: n_frag x 1 array, species for the sequence
-    :return: n_frag x 2 matrix
+    :param fragments: n x 1 array, sampled fragments for the sequence
+    :param taxids: n x 1 array, species for the sequence
+    :return: n x (L+1) matrix, where L is the sample length
     """
-    return np.column_stack((fragments, taxids))
+    taxids_length = len(taxids)
+    t = taxids.reshape(taxids_length, 1)
+    return np.concatenate((fragments, t), axis=1)
 
 
 # tested
@@ -177,7 +185,7 @@ def _build_fragment_taxid_array(taxid, seq, sample_length, coverage, seed=None):
     :param coverage: float, desired coverage
             (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
     :param seed: int, random seed for reproducibility. Default is None.
-    :return: n_frag x 2 matrix
+    :return: n x (L+1) matrix, where n is the number of fragments and  L is the sample length
     """
 
     # get fragment array
@@ -235,10 +243,7 @@ def _read_taxid_data(taxid_file):
     :param taxid_file: path to taxid file
     :return: m x 1 array, where m is the number of taxids
     """
-    taxids = np.loadtxt(taxid_file, dtype=str)
-
-    if taxids.shape == ():  # single line in file
-        taxids = taxids.reshape(1, )
+    taxids = np.loadtxt(taxid_file, dtype=str).reshape(-1, )  # reshaping prevents issues when there is a single taxid
 
     return taxids
 
@@ -246,16 +251,18 @@ def _read_taxid_data(taxid_file):
 # tested
 def generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage, seed=None):
     """
+    Generates random fragments for each sequence in the provided file to achieve the desired coverage.
+    For each sequence, writes a binary numpy file of fragments and matching taxids to the output directory.
     Todo - Redesign to process sequences in parallel.
-    Output directory cannot exist.
 
-    :param seq_file:
-    :param taxid_file:
-    :param output_dir:
-    :param sample_length:
-    :param coverage:
-    :param seed:
-    :return:
+    :param seq_file: path to sequences file
+    :param taxid_file: path to taxid file
+    :param output_dir: Directory into which fragment files will be written. Output directory cannot exist beforehand.
+    :param sample_length: int, length of fragments
+    :param coverage: float, desired coverage
+            (0.1 for 10% of bp coverage; 1 for 100% bp coverage; 10 for 10x bp coverage).
+    :param seed: int, random seed for reproducibility. Default is None.
+    :return: None
     """
     # prepare output directory
     _create_fragment_directory(output_dir)
