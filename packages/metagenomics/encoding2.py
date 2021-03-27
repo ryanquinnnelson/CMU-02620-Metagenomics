@@ -23,6 +23,7 @@ def _get_kmer_start(k, i):
 def _concatenate_cols(cols):
     """
     Concatenates the contents of all columns together into a single column.
+    Todo - Find a way to concatenate more than two columns together in a single operation.
 
     :param cols: n x c array, where c is the number of columns to concatenate
     :return: n x 1 array, concatenated contents
@@ -62,6 +63,9 @@ def _group_kmers(fragments, k):
     """
     Groups kmers in place and returns array with kmers and taxids.
     Removes partial kmers.
+    Todo - Could make this more efficient by parallelizing grouping via divide and conquer. Divide rows into
+            desired number of groups. For each group, build kmers for those rows only (this can be done in parallel).
+            Append rows back together at the end.
 
     :param fragments: n x (L+1) array, where n is the number of fragments and L is the sample length
     :param k: int, length of kmer
