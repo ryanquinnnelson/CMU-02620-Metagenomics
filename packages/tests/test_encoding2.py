@@ -119,7 +119,7 @@ def test__group_kmers__large_scale():
                            b't', b'c', b't', b't', b'g', b'g', b'c', b'c', b'g', b'c', b'a',
                            b'a', b'a', b't', b't', b't', b'g', b't', b'c', b'a', b'a', b'a',
                            b'a', b'a', b'g', b't', b't', b'c', b'g', b'a', b't', b'c', b'a',
-                           b'a', b'c', b'1590']], dtype='|S6').reshape(1,-1)
+                           b'a', b'c', b'1590']], dtype='|S6').reshape(1, -1)
 
     k = 10
     X_expected = np.array([[b'tgaaaaagtg',

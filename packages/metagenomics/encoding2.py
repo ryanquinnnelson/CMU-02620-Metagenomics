@@ -75,7 +75,7 @@ def _group_kmers(fragments, k):
     """
     n_fragments = len(fragments)
     n_kmers = _calculate_number_kmers(fragments, k)
-    kmers = np.chararray((n_fragments, n_kmers),itemsize=k)
+    kmers = np.chararray((n_fragments, n_kmers), itemsize=k)
 
     # build kmers
     for i in range(n_kmers):
