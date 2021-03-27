@@ -13,10 +13,12 @@ import math
 def _calc_number_fragments(seq_length, coverage, sample_length):
     """
     Calculates the number of fragments to be randomly sampled from the given sequence in order to
-    achieve desired coverage. Uses formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
+    achieve desired coverage. Derived from formula defined in Vervier et al. See https://arxiv.org/abs/1505.06915.
+    The difference with the formula used here is that fractional n_frag is always rounded up:
 
-    Todo - consider revising to always round up. If fractional portion is required to cover sequence, then one
-       additional fragment can only improve coverage. In contrast, rounding down means expected coverage is not met.
+    n_frag = ceil( S * C / L), where S is sequence length, C is coverage, and L is sample length
+
+    Todo - determine if n_frag really achieves desired coverage
 
     :param seq_length: int, length of sequence to be sampled
     :param coverage: float, desired coverage
