@@ -15,7 +15,7 @@ def test__calc_number_fragments__whole_number():
     assert actual == expected
 
 
-def test__calc_number_fragments__rounding_up():
+def test__calc_number_fragments__above_fifty_percent():
     coverage = 0.051
     sample_length = 200
     sequence_length = 2000
@@ -24,11 +24,11 @@ def test__calc_number_fragments__rounding_up():
     assert actual == expected
 
 
-def test__calc_number_fragments__rounding_down():
-    coverage = 0.05
+def test__calc_number_fragments__below_fifty_percent():
+    coverage = 0.04
     sample_length = 200
     sequence_length = 2000
-    expected = 0.0
+    expected = 1.0
     actual = sampling._calc_number_fragments(sequence_length, coverage, sample_length)
     assert actual == expected
 

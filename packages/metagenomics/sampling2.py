@@ -26,8 +26,8 @@ def _calc_number_fragments(seq_length, coverage, sample_length):
     :param sample_length: int, length of samples
     :return: int, number of fragments to sample
     """
-    n_frag = seq_length * coverage / sample_length
-    return math.ceil(n_frag)
+    n_frag = math.ceil(seq_length * coverage / sample_length)
+    return n_frag
 
 
 # tested
