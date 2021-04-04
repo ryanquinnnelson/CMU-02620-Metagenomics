@@ -1,0 +1,4 @@
+experiment,category,classifier,sample_length,coverage,k,max_depth,n_estimators,score
+1.12,multiclass,Random Forest,100,10,1,72,500,0.46296296296296297
+1.12,multiclass,Random Forest,100,10,2,72,500,0.3962962962962963
+1.12,multiclass,Random Forest,100,10,4,72,500,0.3148148148148148
