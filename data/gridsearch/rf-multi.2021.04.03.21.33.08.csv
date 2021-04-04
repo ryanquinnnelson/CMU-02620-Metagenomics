@@ -1,0 +1,11 @@
+experiment,category,classifier,sample_length,coverage,k,max_depth,n_estimators,score
+1.4,multiclass,Random Forest,100,200,1,50,50,0.8608113137327875
+1.4,multiclass,Random Forest,100,200,1,50,100,0.870487532564198
+1.4,multiclass,Random Forest,100,200,1,50,200,0.8721622627465575
+1.4,multiclass,Random Forest,100,200,1,50,400,0.8753256419799033
+1.4,multiclass,Random Forest,100,200,1,50,800,0.8766282098995162
+1.4,multiclass,Random Forest,100,200,1,50,1600,0.8760699665053964
+1.4,multiclass,Random Forest,100,200,1,50,3200,0.8753256419799033
+1.4,multiclass,Random Forest,100,200,1,60,50,0.8608113137327875
+1.4,multiclass,Random Forest,100,200,1,60,100,0.870487532564198
+1.4,multiclass,Random Forest,100,200,1,60,200,0.8721622627465575
