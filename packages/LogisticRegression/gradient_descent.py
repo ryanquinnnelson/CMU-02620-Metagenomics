@@ -342,5 +342,5 @@ def gradient_descent(X, y_true, w, eta, epsilon):
         # save log likelihood for next round
         prev_log_likelihood = log_likelihood
 
-    print('count of rounds', count)
+    # print('count of rounds', count)
     return weights
