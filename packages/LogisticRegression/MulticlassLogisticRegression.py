@@ -70,7 +70,6 @@ def _get_conditional_proba(X, W, R):
 
     # sum up the bottom terms
     sum_terms = np.sum(terms, axis=0)
-    print(sum_terms.shape)
     ones = np.ones((N, ))
     bottom = ones + sum_terms
     y_pred = 1 / bottom
@@ -100,18 +99,20 @@ def _get_all_conditional_proba(X, W):
 
 def _standardize_probabilities(predictions):
 
-    sums = np.sum(predictions, axis=1)
-    return predictions / sums
-
+    sums = np.sum(predictions, axis=1).reshape(-1, 1)
+    standardized = predictions / sums
+    return standardized
 
 
 class MulticlassLogisticRegression:
 
+    # tested
     def __init__(self, eta, epsilon):
         self.eta = eta
         self.epsilon = epsilon
         self.weights = None
 
+    # tested - perform additional checks to make sure weights match expectations
     def fit(self, X, y):
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
@@ -140,10 +141,8 @@ class MulticlassLogisticRegression:
         :param X:
         :return: N x K matrix
         """
-
         # augment the data so w0 makes sense
-
-
+        pass
 
     def predict(self, X):
         """
@@ -151,4 +150,5 @@ class MulticlassLogisticRegression:
         :param X:
         :return:
         """
+        # augment the data so w0 makes sense
         pass
