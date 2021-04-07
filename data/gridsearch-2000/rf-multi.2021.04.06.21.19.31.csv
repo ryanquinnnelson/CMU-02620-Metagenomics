@@ -1,0 +1,2 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,max_depth,n_estimators,score,score type
+1.14,multiclass,Random Forest,"(21817, 400)",100,400,1,15,45,0.9645482460221457,species_recall
