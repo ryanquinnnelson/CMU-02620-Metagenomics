@@ -44,4 +44,21 @@ class MulticlassLogisticRegression:
             # save trained classifier
             classifiers.append(lr)
 
+        self.classifiers = classifiers
         return self
+
+    def predict_proba(self, X):
+        """
+        Calculates probabilities for each class for each sample.
+        :param X:
+        :return: N x K matrix
+        """
+        pass
+
+    def predict(self, X):
+        """
+        Gets the class which has the highest probability.
+        :param X:
+        :return:
+        """
+        pass

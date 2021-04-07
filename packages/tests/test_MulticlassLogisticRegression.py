@@ -46,3 +46,20 @@ def test__init__():
     assert model.eta == eta
     assert model.epsilon == epsilon
     assert model.classifiers is None
+
+
+def test_fit():
+    X = np.array([[1, 1],
+                  [0, 0],
+                  [1, 0],
+                  [5, 1],
+                  [5, 2],
+                  [5, -1],
+                  [3, 10],
+                  [3, 10.5],
+                  [3, 11]])
+    y = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.5)
+
+    model.fit(X, y)
+    assert len(model.classifiers) == 3
