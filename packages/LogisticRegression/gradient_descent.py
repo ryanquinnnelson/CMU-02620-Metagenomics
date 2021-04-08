@@ -12,7 +12,7 @@ Note 1 - Explanation of _calc_inner()
 Many of the formulas for Logistic Regression involve a calculation between n x 1 weights vector w and L x n feature 
 matrix X:
 
-w_0 + SUM_i^n w_i X_i^L
+w_0 + SUM_i=1^n w_i X_i^L
 where
 - i is the ith feature
 - n is the number of features

@@ -2,6 +2,9 @@
 One-vs-all is a strategy that involves training N distinct binary classifiers,
  each designed to recognize a specific class. After that we collectively use those N classifiers to predict
  the correct class.
+
+ We augment the data for predictions to accommodate w0 in the calculations. We don't augmented the data for fitting the
+ model because logistic regression already augments the data.
 """
 from packages.LogisticRegression.LogisticRegression import LogisticRegression
 import numpy as np
@@ -10,9 +13,31 @@ import copy
 
 # tested
 def _calculate_number_classes(y):
+    """
+    Determines the number of classes among the labels.
+
+    :param y: n x 1 array, where n is the number of samples. Represents labels matching to samples.
+    :return: int, number of classes
+    """
     return len(np.unique(y))
 
 
+# tested
+def _convert_to_binary_classes(y, label):
+    """
+    Changes labels of samples with class=label to one and labels of all other samples to zero.
+
+    :param y: n x 1 array, where n is the number of samples. Represents labels matching to samples.
+    :param label: int, represents label of the class to be defined with ones.
+    :return: n x 1 array of binary values
+    """
+    y_binary = copy.deepcopy(y)  # avoid modifying original array
+    y_binary[y == label] = 1  # set class which remains as 1
+    y_binary[y != label] = 0  # set other classes to zero
+    return y_binary
+
+
+# tested
 def _add_x0(X):
     """
     Adds a column to the left of matrix X with each element set to 1.
@@ -25,56 +50,89 @@ def _add_x0(X):
     return np.insert(X, 0, ones, axis=1)
 
 
+# # tested
+# def _calc_inner(X, w):
+#     """
+#     Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 in gradient_descent.py for explanation of function logic.
+#
+#     :param X:  L x n matrix, where L is the number of samples and n is the number of features
+#     :param w: n x 1 vector
+#     :return: L x 1 vector
+#     """
+#     return np.matmul(X, w)
+#
+#
+# # tested
+# def _calculate_inner_sum(X, W, k):
+#     """
+#
+#     :param X: augmented data
+#     :param W:
+#     :param k:
+#     :return:
+#     """
+#     w = W[k]
+#     Xw = _calc_inner(X, w)
+#     Xw_exp = np.exp(Xw)
+#     return Xw_exp
+
+
 # tested
-def _convert_to_binary_classes(y, i):
-    y_binary = copy.deepcopy(y)  # avoid modifying original array
-    y_binary[y == i] = 1  # set class which remains as 1
-    y_binary[y != i] = 0  # set other classes to zero
-    return y_binary
-
-
-def _calc_inner(X, w):
+def _calculate_outer_sum(inner_sums, R_sums):
     """
-    Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 in gradient descent.
+    It is more efficient to subtract one row from another row than to create a second matrix with R-1 rows.
 
-    :param X: augmented data
-    :param w:
+    :param inner_sums:
     :return:
     """
-    return np.matmul(X, w)
+
+    # sum K-1 classes
+    R_minus_one_sums = np.sum(inner_sums, axis=0) - R_sums
+
+    # add 1 to each sample value
+    n_samples = inner_sums.shape[1]
+    ones = np.ones((n_samples,))
+    bottom = ones + R_minus_one_sums
+
+    return bottom
 
 
-def _get_conditional_proba(X, W, R):
+def _calc_conditional_proba(inner_sums, R):
     """
 
-    :param X: augmented data
-    :param W:
+    P(Y=R|X^L) = 1 / a
+
+    where
+    - a = 1 + SUM_k=1^R-1 exp(w_k0 + SUM_i=1^n w_ki X_i^L)
+    - R: the Rth class
+    - n: number of samples
+
+    :param inner_sums:
     :param R:
     :return:
     """
+    n_classes = len(inner_sums)
+    n_samples = inner_sums.shape[1]
+    inner_sums = np.zeros((n_classes - 1, n_samples))  # we sum all classes except R
 
-    K = len(W)
-    N = len(X)
-    terms = np.zeros((K - 1, N))
-    row = 0
+    # get sums for class R so they can be subtracted from total
+    R_sums = inner_sums[R]
 
-    # consider classes not equal to R
-    for k in range(K):
-
-        if k != R:
-            w = W[k]
-            Xw = _calc_inner(X, w)
-            Xw_exp = np.exp(Xw)
-            terms[row] = Xw_exp
-            row += 1
-
-    # sum up the bottom terms
-    sum_terms = np.sum(terms, axis=0)
-    ones = np.ones((N, ))
-    bottom = ones + sum_terms
+    # sum up the bottom terms without sums from class R
+    bottom = _calculate_outer_sum(inner_sums, R_sums)
     y_pred = 1 / bottom
-
     return y_pred
+
+
+def _calculate_inner_sums(X,W):
+    """
+    Calculates all inner sums at the same time.
+
+    :param X:
+    :param W:
+    :return:
+    """
+    return np.matmul(W, X.T)
 
 
 def _get_all_conditional_proba(X, W):
@@ -85,19 +143,27 @@ def _get_all_conditional_proba(X, W):
     :return:
     """
 
-    N = len(X)
-    K = len(W)
+    N = len(X)  # number of samples
+    K = len(W)  # number of classes
+
+    # calculate inner sums for reuse
+    inner_sums = _calculate_inner_sums(X, W)
 
     predictions = np.zeros((K, N))  # transposed for ease of row replacement
-
     for k in range(K):
-        proba_k = _get_conditional_proba(X, W, k)
+        proba_k = _calc_conditional_proba(inner_sums, k)
         predictions[k] = proba_k
 
     return predictions.T
 
 
 def _standardize_probabilities(predictions):
+    """
+    Todo - Determine if this should really be necessary.
+
+    :param predictions:
+    :return:
+    """
 
     sums = np.sum(predictions, axis=1).reshape(-1, 1)
     standardized = predictions / sums
