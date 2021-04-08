@@ -97,7 +97,24 @@ def _calculate_outer_sum(inner_sums, R_sums):
     return bottom
 
 
-def _calc_conditional_proba(inner_sums, R):
+# tested
+def _calculate_inner_sums(X, W):
+    """
+    Calculates all inner sums at the same time. After performing each class inner summation separately per the method
+    in Note 1 gradient_descent.py, I found that it was possible to get the same results by modifying the order and
+    terms of the matrix multiplication.
+
+    :param X:
+    :param W:
+    :return:
+    """
+    summations = np.matmul(W, X.T)
+    inner_sums = np.exp(summations)
+    return inner_sums
+
+
+# tested
+def _calc_conditional_proba_R(inner_sums, R):
     """
 
     P(Y=R|X^L) = 1 / a
@@ -113,29 +130,19 @@ def _calc_conditional_proba(inner_sums, R):
     """
     n_classes = len(inner_sums)
     n_samples = inner_sums.shape[1]
-    inner_sums = np.zeros((n_classes - 1, n_samples))  # we sum all classes except R
 
     # get sums for class R so they can be subtracted from total
     R_sums = inner_sums[R]
 
     # sum up the bottom terms without sums from class R
     bottom = _calculate_outer_sum(inner_sums, R_sums)
+
     y_pred = 1 / bottom
     return y_pred
 
 
-def _calculate_inner_sums(X,W):
-    """
-    Calculates all inner sums at the same time.
-
-    :param X:
-    :param W:
-    :return:
-    """
-    return np.matmul(W, X.T)
-
-
-def _get_all_conditional_proba(X, W):
+# tested
+def _calc_all_conditional_proba(X, W):
     """
 
     :param X: augmented data
@@ -151,23 +158,28 @@ def _get_all_conditional_proba(X, W):
 
     predictions = np.zeros((K, N))  # transposed for ease of row replacement
     for k in range(K):
-        proba_k = _calc_conditional_proba(inner_sums, k)
+        proba_k = _calc_conditional_proba_R(inner_sums, k)
         predictions[k] = proba_k
 
     return predictions.T
 
 
-def _standardize_probabilities(predictions):
+# tested
+def _standardize_probabilities(y_pred_proba):
     """
-    Todo - Determine if this should really be necessary.
 
-    :param predictions:
+    :param y_pred_proba:
     :return:
     """
 
-    sums = np.sum(predictions, axis=1).reshape(-1, 1)
-    standardized = predictions / sums
+    sums = np.sum(y_pred_proba, axis=1).reshape(-1, 1)
+    standardized = y_pred_proba / sums
     return standardized
+
+
+# tested
+def _get_largest_proba(y_predict_proba):
+    return np.argmax(y_predict_proba, axis=1)
 
 
 class MulticlassLogisticRegression:
@@ -204,17 +216,29 @@ class MulticlassLogisticRegression:
     def predict_proba(self, X):
         """
         Calculates probabilities for each class for each sample.
+        Todo - Determine if standardization should really be necessary.
+
         :param X:
         :return: N x K matrix
         """
         # augment the data so w0 makes sense
-        pass
+        X_aug = _add_x0(X)
+
+        # calculate probabilities per class
+        y_pred_proba = _calc_all_conditional_proba(X_aug, self.weights)
+
+        y_pred_proba_standardized = _standardize_probabilities(y_pred_proba)
+
+        return y_pred_proba_standardized
 
     def predict(self, X):
         """
-        Gets the class which has the highest probability.
+        Selects the class which has the highest probability for each sample.
         :param X:
         :return:
         """
-        # augment the data so w0 makes sense
-        pass
+        y_pred_proba_standardized = self.predict_proba(X)
+
+        # for each sample choose the class with the highest probability
+        y_pred = _get_largest_proba(y_pred_proba_standardized)
+        return y_pred
