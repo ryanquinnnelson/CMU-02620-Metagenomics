@@ -61,7 +61,7 @@ def test_fit():
                   [3, 10.5],
                   [3, 11]])
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.5)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
     assert len(model.weights) == 3
 
@@ -139,7 +139,7 @@ def test__get_all_conditional_proba():
                   [3, 10.5],
                   [3, 11]])
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.5)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
     W = model.weights
     print(W)

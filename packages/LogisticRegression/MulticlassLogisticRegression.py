@@ -119,9 +119,9 @@ class MulticlassLogisticRegression:
         J = X.shape[1]
 
         # train binary classifier for each class
-        classifiers = np.zeros((n_classifiers, J + 1))  # extra col for w0
+        weights = np.zeros((n_classifiers, J + 1))  # extra col for w0
         for i in range(n_classifiers):
-            lr = LogisticRegression(self.eta, self.epsilon)
+            lr = LogisticRegression(eta=self.eta, epsilon=self.epsilon)
 
             # convert to binary classes
             y_binary = _convert_to_binary_classes(y, i)
@@ -130,9 +130,9 @@ class MulticlassLogisticRegression:
             lr.fit(X, y_binary)
 
             # retain weights for this classifier
-            classifiers[i] = lr.weights
+            weights[i] = lr.weights
 
-        self.weights = classifiers
+        self.weights = weights
         return self
 
     def predict_proba(self, X):
