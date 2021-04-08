@@ -1,0 +1,2 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsilon,score,score type
+4.01,multiclass,Logistic Regression,"(6, 378)",100,0.1,1,0.01,0.01,0.0,species_recall
