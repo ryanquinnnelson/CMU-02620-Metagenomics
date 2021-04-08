@@ -183,6 +183,10 @@ def _get_largest_proba(y_predict_proba):
 
 
 class MulticlassLogisticRegression:
+    """
+    This version stores the regression coefficient weights from each of the binary Logistic Regression classifiers fit
+    to each class, and it uses the weights for predictions.
+    """
 
     # tested
     def __init__(self, eta, epsilon):
@@ -190,7 +194,7 @@ class MulticlassLogisticRegression:
         self.epsilon = epsilon
         self.weights = None
 
-    # tested - perform additional checks to make sure weights match expectations
+    # tested
     def fit(self, X, y):
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
@@ -231,6 +235,76 @@ class MulticlassLogisticRegression:
 
         return y_pred_proba_standardized
 
+    def predict(self, X):
+        """
+        Selects the class which has the highest probability for each sample.
+        :param X:
+        :return:
+        """
+        y_pred_proba_standardized = self.predict_proba(X)
+
+        # for each sample choose the class with the highest probability
+        y_pred = _get_largest_proba(y_pred_proba_standardized)
+        return y_pred
+
+
+class MulticlassLogisticRegression2:
+    """
+    This version stores the binary Logistic Regression classifiers fit to each class,
+    and it uses the classifiers for predictions.
+    """
+
+    # tested
+    def __init__(self, eta, epsilon):
+        self.eta = eta
+        self.epsilon = epsilon
+        self.classifiers = None
+
+    # tested
+    def fit(self, X, y):
+        # determine how many binary classifiers must be trained
+        n_classifiers = _calculate_number_classes(y)
+        J = X.shape[1]
+
+        # train binary classifier for each class
+        classifiers = []
+        for i in range(n_classifiers):
+            lr = LogisticRegression(eta=self.eta, epsilon=self.epsilon)
+
+            # convert to binary classes
+            y_binary = _convert_to_binary_classes(y, i)
+
+            # fit binary classifier
+            lr.fit(X, y_binary)
+
+            # retain weights for this classifier
+            classifiers.append(lr)
+
+        self.classifiers = classifiers
+        return self
+
+    # tested
+    def predict_proba(self, X):
+        """
+        Calculates probabilities for each class for each sample.
+        Todo - Determine if standardization should really be necessary.
+
+        :param X:
+        :return: N x K matrix
+        """
+        K = len(self.classifiers)
+        N = len(X)
+        y_pred_proba_T = np.zeros((K, N))  # transposed to make row replacement easier
+
+        for k, classifier in enumerate(self.classifiers):
+            predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
+            y_pred_proba_T[k] = predict_proba_k
+
+        y_pred_proba = y_pred_proba_T.T
+        y_pred_proba_standardized = _standardize_probabilities(y_pred_proba)
+        return y_pred_proba_standardized
+
+    # tested
     def predict(self, X):
         """
         Selects the class which has the highest probability for each sample.

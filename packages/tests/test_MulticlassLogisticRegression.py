@@ -299,6 +299,91 @@ def test_predict():
     model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.weights = W
 
-    expected = np.array([0,1,2,2])
+    expected = np.array([0, 1, 2, 2])
+    actual = model.predict(X_test)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test__init__v2():
+    eta = 1
+    epsilon = 2
+    model = mlr.MulticlassLogisticRegression2(eta, epsilon)
+    assert model.eta == eta
+    assert model.epsilon == epsilon
+    assert model.classifiers is None
+
+
+def test_fit__v2():
+    X = np.array([[1, 1],
+                  [0, 0],
+                  [1, 0],
+                  [0, 4],
+                  [5, 1],
+                  [5, 2],
+                  [5, -1],
+                  [5, 10],
+                  [3, 10],
+                  [3, 10.5],
+                  [3, 11]])
+    y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
+    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model.fit(X, y)
+    assert len(model.classifiers) == 3
+
+
+def test_predict_proba_v2():
+    X = np.array([[1, 1],
+                  [0, 0],
+                  [1, 0],
+                  [0, 4],
+                  [5, 1],
+                  [5, 2],
+                  [5, -1],
+                  [5, 10],
+                  [3, 10],
+                  [3, 10.5],
+                  [3, 11]])
+    y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
+    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model.fit(X, y)
+
+    X_test = np.array([[0, 1],
+                       [5, 0],
+                       [3, 10.25],
+                       [0, 5]])
+
+    expected = np.zeros((3, 4))
+    for k, lr in enumerate(model.classifiers):
+        predict_proba_k = lr.predict_proba(X_test)[:, 1]
+        expected[k] = predict_proba_k
+    sums = np.sum(expected.T, axis=1).reshape(-1, 1)
+    standardized = expected.T / sums
+
+    actual = model.predict_proba(X_test)
+    np.testing.assert_allclose(actual, standardized, atol=1e-16)
+
+
+def test_predict_v2():
+    X = np.array([[1, 1],
+                  [0, 0],
+                  [1, 0],
+                  [0, 4],
+                  [5, 1],
+                  [5, 2],
+                  [5, -1],
+                  [5, 10],
+                  [3, 10],
+                  [3, 10.5],
+                  [3, 11]])
+    y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
+    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model.fit(X, y)
+
+    X_test = np.array([[0, 1],
+                       [5, 0],
+                       [3, 10.25],
+                       [0, 5]])
+
+    expected = np.array([0, 1, 2, 2])
     actual = model.predict(X_test)
     np.testing.assert_array_equal(actual, expected)
