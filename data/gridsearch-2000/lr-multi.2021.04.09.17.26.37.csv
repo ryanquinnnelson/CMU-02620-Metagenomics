@@ -25,3 +25,8 @@ experiment,category,classifier,training shape,sample_length,coverage,k,penalty,m
 7.01,multiclass,Logistic Regression (sklearn),"(10908, 6400)",100,200,4,l1,auto,,0.8786751023446222,species_recall
 7.01,multiclass,Logistic Regression (sklearn),"(10908, 43939)",100,200,6,l1,auto,,0.8325269817640492,species_recall
 7.01,multiclass,Logistic Regression (sklearn),"(10908, 68550)",100,200,8,l1,auto,,0.7030145143282471,species_recall
+7.01,multiclass,Logistic Regression (sklearn),"(10908, 63875)",100,200,10,l1,auto,,0.6016002977298102,species_recall
+7.01,multiclass,Logistic Regression (sklearn),"(10908, 51766)",100,200,12,l1,auto,,0.572757722366952,species_recall
+7.01,multiclass,Logistic Regression (sklearn),"(21817, 400)",100,400,1,l1,auto,,0.5045128873173909,species_recall
+7.01,multiclass,Logistic Regression (sklearn),"(21817, 800)",100,400,2,l1,auto,,0.6582302037777985,species_recall
+7.01,multiclass,Logistic Regression (sklearn),"(21817, 6400)",100,400,4,l1,auto,,0.9693868056201731,species_recall
