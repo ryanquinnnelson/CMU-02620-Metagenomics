@@ -194,15 +194,25 @@ def _update_weights(w, eta, gradient):
     W <- W + (eta * gradient)
 
     :param w: n x 1 vector
-    :param eta:
+    :param eta: float, learning rate
     :param gradient: n x 1 vector
-    :return:
+    :return: updated weights
     """
     change = eta * gradient
     return w + change
 
 
 def _update_weights_l2(w, eta, gradient, l1_lambda):
+    """
+    Updates regression coefficients using the following formula:
+    W <- W - (eta * l1_lambda * W) + (eta * gradient)
+
+    :param w: n x 1 vector
+    :param eta: float, learning rate
+    :param gradient: n x 1 vector
+    :param l1_lambda:
+    :return: updated weights
+    """
     regularization_term = eta * l1_lambda * w
     w_updated = w - regularization_term + (eta * gradient)
     return w_updated
@@ -317,10 +327,15 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     :param X: L x n matrix, where L is the number of samples and n is the number of features
     :param y_true: L x 1 vector
     :param w: n x 1 vector
-    :param eta: learning rate
-    :param epsilon: convergence threshold
-    :return: n x 1 vector
+    :param eta: float, learning rate
+    :param epsilon: float, convergence threshold
+    :param penalty: str, penalty type to use. Default is None. Current implementation allows 'l2'.
+    :param l2_lambda: float, value of l2 penalty if that penalty is used. Default is 0.
+    :param max_iter: int, number of iterations allowed during convergence. Exceeding this number stops the algorithm
+            and returns the current weights at that point.
+    :return: n x 1 vector, weight of each feature at convergence.
     """
+
     # set initial weights
     weights = w
 

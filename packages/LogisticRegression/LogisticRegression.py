@@ -6,35 +6,46 @@ import packages.LogisticRegression.gradient_descent as gd
 def _set_weights(X):
     """
     Creates an array of weights with each element set to 0.
-    :param cols:
-    :return:
+
+    :param X: N x J matrix, where N is the number of samples and J is the number of features.
+            Assumes X is augmented for w0 already.
+    :return: J x 1 array
     """
     cols = X.shape[1]
     return np.zeros(cols)
 
 
 # tested
-# does not work properly with a single sample
 def _add_x0(X):
     """
     Adds a column to the left of matrix X with each element set to 1.
-    :param X:
-    :param rows:
-    :return:
+    Todo - make this function work for a single sample
+
+    :param X: N x J matrix, where N is the number of samples and J is the number of features.
+            Assumes X is not augmented for w0 yet.
+
+    :return: N x (J+1) matrix
     """
-    rows = X.shape[0]
+    rows = len(X)
     ones = np.ones(rows)
-    return np.insert(X, 0, ones, axis=1)
+    X_aug = np.insert(X, 0, ones, axis=1)
+    return X_aug
 
 
 class LogisticRegression:
+    """
+    Implements logistic regression using gradient descent as defined by Machine Learning (Mitchell).
+    """
 
     # tested
     def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
         """
 
-        :param eta: learning rate
-        :param epsilon: convergence threshold
+        :param eta:
+        :param epsilon:
+        :param penalty:
+        :param l2_lambda:
+        :param max_iter:
         """
         self.eta = eta
         self.epsilon = epsilon
@@ -45,6 +56,7 @@ class LogisticRegression:
 
     def fit(self, X, y):
         """
+        Fits the model to the data.
 
         :param X: L x n matrix, where L is the number of samples and n is the number of features
         :param y: L x 1 matrix
@@ -57,7 +69,8 @@ class LogisticRegression:
         weights = _set_weights(X_aug)
 
         # perform gradient descent until convergence
-        weights = gd.gradient_descent(X_aug, y, weights, self.eta, self.epsilon, self.penalty, self.l2_lambda, self.max_iter)
+        weights = gd.gradient_descent(X_aug, y, weights, self.eta, self.epsilon,
+                                      self.penalty, self.l2_lambda, self.max_iter)
         self.weights = weights
 
         return self
@@ -66,6 +79,7 @@ class LogisticRegression:
     def predict(self, X):
         """
         Returns predicted label for each sample.
+
         :param X: L x n matrix, where L is the number of samples and n is the number of features
         :return: L x 1 vector
         """
@@ -78,7 +92,7 @@ class LogisticRegression:
     def predict_proba(self, X):
         """
         Probability estimates. Returned estimates for all classes are ordered by the label of classes.
-        Note: Currently implemented for data with two classes.
+        Implemented for binary data.
 
         :param X: L x n matrix, where L is the number of samples and n is the number of features
         :return: L x j vector, where j is the number of classes

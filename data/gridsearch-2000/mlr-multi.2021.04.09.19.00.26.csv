@@ -2,3 +2,4 @@ experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsil
 6.03,multiclass,Logistic Regression,"(21817, 400)",100,400,1,0.01,0.01,,0,100,0.180515492695636,species_recall
 6.03,multiclass,Logistic Regression,"(21817, 800)",100,400,2,0.01,0.01,,0,100,0.43872708662882665,species_recall
 6.03,multiclass,Logistic Regression,"(21817, 6400)",100,400,4,0.01,0.01,,0,100,0.8478645203312553,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 46691)",100,400,6,0.01,0.01,,0,100,0.9667814273750814,species_recall

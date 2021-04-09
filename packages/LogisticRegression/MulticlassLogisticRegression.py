@@ -50,33 +50,6 @@ def _add_x0(X):
     return np.insert(X, 0, ones, axis=1)
 
 
-# # tested
-# def _calc_inner(X, w):
-#     """
-#     Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 in gradient_descent.py for explanation of function logic.
-#
-#     :param X:  L x n matrix, where L is the number of samples and n is the number of features
-#     :param w: n x 1 vector
-#     :return: L x 1 vector
-#     """
-#     return np.matmul(X, w)
-#
-#
-# # tested
-# def _calculate_inner_sum(X, W, k):
-#     """
-#
-#     :param X: augmented data
-#     :param W:
-#     :param k:
-#     :return:
-#     """
-#     w = W[k]
-#     Xw = _calc_inner(X, w)
-#     Xw_exp = np.exp(Xw)
-#     return Xw_exp
-
-
 # tested
 def _calculate_outer_sum(inner_sums, R_sums):
     """
@@ -179,23 +152,48 @@ def _standardize_probabilities(y_pred_proba):
 
 # tested
 def _get_largest_proba(y_predict_proba):
+    """
+
+    :param y_predict_proba:
+    :return:
+    """
     return np.argmax(y_predict_proba, axis=1)
 
 
 class MulticlassLogisticRegression:
     """
+    Implements multiclass logistic regression.
+
     This version stores the regression coefficient weights from each of the binary Logistic Regression classifiers fit
     to each class, and it uses the weights for predictions.
     """
 
     # tested
-    def __init__(self, eta, epsilon):
+    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
+        """
+
+        :param eta:
+        :param epsilon:
+        :param penalty:
+        :param l2_lambda:
+        :param max_iter:
+        """
         self.eta = eta
         self.epsilon = epsilon
         self.weights = None
+        self.penalty = penalty
+        self.l2_lambda = l2_lambda
+        self.max_iter = max_iter
 
     # tested
     def fit(self, X, y):
+        """
+
+        :param X: Assumes X is not augmented.
+        :param y:
+        :return:
+        """
+
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
         J = X.shape[1]
@@ -203,7 +201,11 @@ class MulticlassLogisticRegression:
         # train binary classifier for each class
         weights = np.zeros((n_classifiers, J + 1))  # extra col for w0
         for i in range(n_classifiers):
-            lr = LogisticRegression(eta=self.eta, epsilon=self.epsilon)
+            lr = LogisticRegression(eta=self.eta,
+                                    epsilon=self.epsilon,
+                                    penalty=self.penalty,
+                                    l2_lambda=self.l2_lambda,
+                                    max_iter=self.max_iter)
 
             # convert to binary classes
             y_binary = _convert_to_binary_classes(y, i)
@@ -222,7 +224,7 @@ class MulticlassLogisticRegression:
         Calculates probabilities for each class for each sample.
         Todo - Determine if standardization should really be necessary.
 
-        :param X:
+        :param X: Assumes X is not augmented.
         :return: N x K matrix
         """
         # augment the data so w0 makes sense
@@ -230,7 +232,6 @@ class MulticlassLogisticRegression:
 
         # calculate probabilities per class
         y_pred_proba = _calc_all_conditional_proba(X_aug, self.weights)
-
         y_pred_proba_standardized = _standardize_probabilities(y_pred_proba)
 
         return y_pred_proba_standardized
@@ -238,24 +239,39 @@ class MulticlassLogisticRegression:
     def predict(self, X):
         """
         Selects the class which has the highest probability for each sample.
+
         :param X:
         :return:
         """
-        y_pred_proba_standardized = self.predict_proba(X)
+        # augment the data so w0 makes sense
+        X_aug = _add_x0(X)
+
+        # calculate probabilities per class
+        y_pred_proba = _calc_all_conditional_proba(X_aug, self.weights)
 
         # for each sample choose the class with the highest probability
-        y_pred = _get_largest_proba(y_pred_proba_standardized)
+        y_pred = _get_largest_proba(y_pred_proba)
         return y_pred
 
 
 class MulticlassLogisticRegression2:
     """
+    Implements multiclass logistic regression.
+
     This version stores the binary Logistic Regression classifiers fit to each class,
-    and it uses the classifiers for predictions.
+    and it uses the classifiers directly for predictions.
     """
 
     # tested
     def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
+        """
+
+        :param eta:
+        :param epsilon:
+        :param penalty:
+        :param l2_lambda:
+        :param max_iter:
+        """
         self.eta = eta
         self.epsilon = epsilon
         self.classifiers = None
@@ -265,6 +281,13 @@ class MulticlassLogisticRegression2:
 
     # tested
     def fit(self, X, y):
+        """
+        Todo - add ability to turn off verbose printing.
+
+        :param X: Assumes X is not augmented.
+        :param y:
+        :return:
+        """
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
         print('n_classifiers', n_classifiers)
@@ -295,7 +318,7 @@ class MulticlassLogisticRegression2:
         """
         Calculates probabilities for each class for each sample.
 
-        :param X:
+        :param X: Assumes X is not augmented.
         :return: N x K matrix
         """
         K = len(self.classifiers)
@@ -314,7 +337,8 @@ class MulticlassLogisticRegression2:
     def predict(self, X):
         """
         Selects the class which has the highest probability for each sample.
-        :param X:
+
+        :param X: Assumes X is not augmented.
         :return:
         """
         K = len(self.classifiers)
@@ -325,7 +349,7 @@ class MulticlassLogisticRegression2:
             predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
             y_pred_proba_T[k] = predict_proba_k
 
-        y_pred_proba = y_pred_proba_T.T   # no need to standardize results
+        y_pred_proba = y_pred_proba_T.T  # no need to standardize results
 
         # for each sample choose the class with the highest probability
         y_pred = _get_largest_proba(y_pred_proba)
