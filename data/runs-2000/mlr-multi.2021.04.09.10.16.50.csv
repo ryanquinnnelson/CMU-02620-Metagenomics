@@ -1,8 +1,0 @@
-experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsilon,score,score type
-4.04,multiclass,Logistic Regression,"(5454, 400)",100,100,1,0.01,0.01,0.3572757722366952,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 800)",100,100,2,0.01,0.01,0.4938593226646818,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 6399)",100,100,4,0.01,0.01,0.7379977670264235,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 38665)",100,100,6,0.01,0.01,0.6881280238183848,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 53604)",100,100,8,0.01,0.01,0.6270934127279494,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 48759)",100,100,10,0.01,0.01,0.6427242277633048,species_recall
-4.04,multiclass,Logistic Regression,"(5454, 39395)",100,100,12,0.01,0.01,0.6345366579828805,species_recall
