@@ -1,7 +1,7 @@
 experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsilon,penalty,l2_lambda,max_iter,score,score type
 4.01,multiclass,Logistic Regression,"(12, 398)",100,0.2,1,0.01,0.01,l2,0,100000,0.166666667,species_recall
 4.01,multiclass,Logistic Regression,"(12, 525)",100,0.2,2,0.01,0.01,l2,0,100000,0.333333333,species_recall
-4.01,multiclass,Logistic Regression,"(12, 432)",100,0.2,4,0.01,0.01,l2,0,100000,0.333333333,species_recall
+4.01,multiclass,Logistic Regression,"(12, 432)",100,0.2,4,`,0.01,l2,0,100000,0.333333333,species_recall
 4.01,multiclass,Logistic Regression,"(12, 287)",100,0.2,6,0.01,0.01,l2,0,100000,0.166666667,species_recall
 4.01,multiclass,Logistic Regression,"(12, 216)",100,0.2,8,0.01,0.01,l2,0,100000,0.166666667,species_recall
 4.01,multiclass,Logistic Regression,"(12, 180)",100,0.2,10,0.01,0.01,l2,0,100000,0.166666667,species_recall
@@ -206,3 +206,10 @@ experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsil
 6.01,multiclass,Logistic Regression,"(21817, 46691)",100,400,6,0.01,0.01,l2,10,100,0.236624174,species_recall
 6.01,multiclass,Logistic Regression,"(21817, 46691)",100,400,6,0.01,0.01,l2,100,100,0.236624174,species_recall
 6.01,multiclass,Logistic Regression,"(21817, 46691)",100,400,6,0.01,0.01,l2,0.1,100,0.967525821,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,0.1,100,0.884443617,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,0.5,100,0.879233346,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,1,100,0.683475996,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,3,100,0.388909565,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,6,100,0.421845925,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,10,100,0.24339412,species_recall
+6.02,multiclass,Logistic Regression,"(10908, 6400)",100,200,4,0.01,0.01,l2,0,100,0.882582806,species_recall
