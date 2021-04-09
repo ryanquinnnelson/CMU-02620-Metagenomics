@@ -292,7 +292,6 @@ class MulticlassLogisticRegression2:
     def predict_proba(self, X):
         """
         Calculates probabilities for each class for each sample.
-        Todo - Determine if standardization should really be necessary.
 
         :param X:
         :return: N x K matrix
@@ -316,8 +315,16 @@ class MulticlassLogisticRegression2:
         :param X:
         :return:
         """
-        y_pred_proba_standardized = self.predict_proba(X)
+        K = len(self.classifiers)
+        N = len(X)
+        y_pred_proba_T = np.zeros((K, N))  # transposed to make row replacement easier
+
+        for k, classifier in enumerate(self.classifiers):
+            predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
+            y_pred_proba_T[k] = predict_proba_k
+
+        y_pred_proba = y_pred_proba_T.T   # no need to standardize results
 
         # for each sample choose the class with the highest probability
-        y_pred = _get_largest_proba(y_pred_proba_standardized)
+        y_pred = _get_largest_proba(y_pred_proba)
         return y_pred
