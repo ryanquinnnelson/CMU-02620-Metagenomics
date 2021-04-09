@@ -202,6 +202,12 @@ def _update_weights(w, eta, gradient):
     return w + change
 
 
+def _update_weights_l2(w, eta, gradient, l1_lambda):
+    regularization_term = eta * l1_lambda * w
+    w_updated = w - regularization_term + (eta * gradient)
+    return w_updated
+
+
 # tested
 def _calc_inner(X, w):
     """
@@ -304,7 +310,7 @@ def _calc_log_likelihood(X, y_true, w):
     return sum_1 - sum_2
 
 
-def gradient_descent(X, y_true, w, eta, epsilon):
+def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, penalty_lambda=0):
     """
     Performs gradient descent to derive optimal regression coefficients.
 
@@ -334,7 +340,11 @@ def gradient_descent(X, y_true, w, eta, epsilon):
         # update weights
         y_pred = get_y_predictions(X, weights)
         gradient = _calc_gradient(X, y_true, y_pred)
-        weights = _update_weights(weights, eta, gradient)
+
+        if penalty == 'l2':
+            weights = _update_weights_l2(weights, eta, gradient, penalty_lambda)
+        else:
+            weights = _update_weights(weights, eta, gradient)
 
         # calculate difference
         log_likelihood = _calc_log_likelihood(X, y_true, weights)

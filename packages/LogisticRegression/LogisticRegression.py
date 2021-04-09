@@ -30,7 +30,7 @@ def _add_x0(X):
 class LogisticRegression:
 
     # tested
-    def __init__(self, eta, epsilon):
+    def __init__(self, eta, epsilon, penalty=None, penalty_lambda=0):
         """
 
         :param eta: learning rate
@@ -39,6 +39,8 @@ class LogisticRegression:
         self.eta = eta
         self.epsilon = epsilon
         self.weights = None
+        self.penalty = penalty
+        self.penalty_lambda = penalty_lambda
 
     def fit(self, X, y):
         """
@@ -54,7 +56,7 @@ class LogisticRegression:
         weights = _set_weights(X_aug)
 
         # perform gradient descent until convergence
-        weights = gd.gradient_descent(X_aug, y, weights, self.eta, self.epsilon)
+        weights = gd.gradient_descent(X_aug, y, weights, self.eta, self.epsilon, self.penalty, self.penalty_lambda)
         self.weights = weights
 
         return self

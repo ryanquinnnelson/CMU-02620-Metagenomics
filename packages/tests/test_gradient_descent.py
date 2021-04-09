@@ -45,6 +45,17 @@ def test__update_weights():
     np.testing.assert_array_equal(actual, expected)
 
 
+def test__update_weights_l2():
+    eta = 0.01
+    gradient = np.array([1, -2, 3])
+    w = np.array([4, 5, 6])
+    l2_lambda = 0.5
+
+    expected = np.array([3.99, 4.955, 6.00])
+    actual = gd._update_weights_l2(w, eta, gradient, l2_lambda)
+    np.testing.assert_allclose(actual, expected, atol=1e-16)
+
+
 def test__calc_left_half_log_likelihood():
     X = np.array([[1, 1, 1, 1],
                   [1, 5, 1, 1],
