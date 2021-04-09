@@ -327,7 +327,8 @@ def gradient_descent(X, y_true, w, eta, epsilon):
     while diff > epsilon:
 
         count += 1
-        if count > 100000:
+        if count > 100:
+            print('STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.')
             break  # stop descending because something is probably wrong
 
         # update weights

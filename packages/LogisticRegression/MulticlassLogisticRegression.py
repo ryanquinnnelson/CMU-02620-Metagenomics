@@ -264,7 +264,6 @@ class MulticlassLogisticRegression2:
     def fit(self, X, y):
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
-        J = X.shape[1]
 
         # train binary classifier for each class
         classifiers = []
