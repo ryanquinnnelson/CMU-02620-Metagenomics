@@ -1,5 +1,0 @@
-experiment,category,classifier,training shape,sample_length,coverage,k,max_depth,n_estimators,score
-2.04,multiclass,Random Forest,"(165402, 400)",100,20,1,72,50,0.5436367653557225
-2.04,multiclass,Random Forest,"(165402, 800)",100,20,2,72,50,0.553947562233024
-2.04,multiclass,Random Forest,"(165402, 6400)",100,20,4,72,50,0.3003265085677812
-2.04,multiclass,Random Forest,"(165402, 65536)",100,20,6,72,50,0.23890361859871362

@@ -1,2 +1,0 @@
-experiment,category,classifier,training shape,sample_length,coverage,k,max_depth,n_estimators,score
-2.02,multiclass,Random Forest,"(82734, 400)",100,10,1,72,50,0.4701970503791318
