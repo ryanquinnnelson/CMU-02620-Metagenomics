@@ -33,12 +33,15 @@ def test__add_x0_two_cols_multiple_samples():
 
 
 def test__init__():
-    a = lr.LogisticRegression(eta=0.01, epsilon=0.5, penalty='l2', penalty_lambda=5)
+    a = lr.LogisticRegression(eta=0.01,
+                              epsilon=0.5,
+                              penalty='l2',
+                              l2_lambda=5)
     assert a.eta == 0.01
     assert a.epsilon == 0.5
     assert a.weights is None
     assert a.penalty == 'l2'
-    assert a.penalty_lambda == 5
+    assert a.l2_lambda == 5
 
 
 def test_predict_two_samples():

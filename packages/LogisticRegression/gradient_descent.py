@@ -310,7 +310,7 @@ def _calc_log_likelihood(X, y_true, w):
     return sum_1 - sum_2
 
 
-def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, penalty_lambda=0):
+def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0):
     """
     Performs gradient descent to derive optimal regression coefficients.
 
@@ -342,7 +342,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, penalty_lambda=0)
         gradient = _calc_gradient(X, y_true, y_pred)
 
         if penalty == 'l2':
-            weights = _update_weights_l2(weights, eta, gradient, penalty_lambda)
+            weights = _update_weights_l2(weights, eta, gradient, l2_lambda)
         else:
             weights = _update_weights(weights, eta, gradient)
 

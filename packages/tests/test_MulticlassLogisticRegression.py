@@ -387,3 +387,34 @@ def test_predict_v2():
     expected = np.array([0, 1, 2, 2])
     actual = model.predict(X_test)
     np.testing.assert_array_equal(actual, expected)
+
+
+def test_predict_v2__l2_penalty():
+    X = np.array([[1, 1],
+                  [0, 0],
+                  [1, 0],
+                  [0, 4],
+                  [5, 1],
+                  [5, 2],
+                  [5, -1],
+                  [5, 10],
+                  [3, 10],
+                  [3, 10.5],
+                  [3, 11]])
+    y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
+    penalty='l2'
+    penalty_lambda=0.1
+    model = mlr.MulticlassLogisticRegression2(eta=0.01,
+                                              epsilon=0.01,
+                                              penalty=penalty,
+                                              l2_lambda=penalty_lambda)
+    model.fit(X, y)
+
+    X_test = np.array([[0, 1],
+                       [5, 0],
+                       [3, 10.25],
+                       [0, 5]])
+
+    expected = np.array([0, 1, 2, 2])
+    actual = model.predict(X_test)
+    np.testing.assert_array_equal(actual, expected)
