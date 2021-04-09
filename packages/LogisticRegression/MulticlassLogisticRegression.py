@@ -255,12 +255,13 @@ class MulticlassLogisticRegression2:
     """
 
     # tested
-    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0):
+    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
         self.eta = eta
         self.epsilon = epsilon
         self.classifiers = None
         self.penalty = penalty
         self.l2_lambda = l2_lambda
+        self.max_iter = max_iter
 
     # tested
     def fit(self, X, y):
@@ -274,7 +275,8 @@ class MulticlassLogisticRegression2:
             lr = LogisticRegression(eta=self.eta,
                                     epsilon=self.epsilon,
                                     penalty=self.penalty,
-                                    l2_lambda=self.l2_lambda)
+                                    l2_lambda=self.l2_lambda,
+                                    max_iter=self.max_iter)
 
             # convert to binary classes
             y_binary = _convert_to_binary_classes(y, i)

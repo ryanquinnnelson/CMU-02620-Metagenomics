@@ -310,7 +310,7 @@ def _calc_log_likelihood(X, y_true, w):
     return sum_1 - sum_2
 
 
-def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0):
+def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
     """
     Performs gradient descent to derive optimal regression coefficients.
 
@@ -333,7 +333,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0):
     while diff > epsilon:
 
         count += 1
-        if count > 100:
+        if count > max_iter:
             print('STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.')
             break  # stop descending because something is probably wrong
 
