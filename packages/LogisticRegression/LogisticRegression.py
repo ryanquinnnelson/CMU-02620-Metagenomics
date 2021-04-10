@@ -1,5 +1,6 @@
 import numpy as np
 import packages.LogisticRegression.gradient_descent as gd
+from scipy.sparse import csr_matrix
 
 
 # tested
@@ -29,7 +30,8 @@ def _add_x0(X):
     rows = len(X)
     ones = np.ones(rows)
     X_aug = np.insert(X, 0, ones, axis=1)
-    return X_aug
+    X_sparse = csr_matrix(X_aug, dtype=np.float64)
+    return X_sparse
 
 
 class LogisticRegression:

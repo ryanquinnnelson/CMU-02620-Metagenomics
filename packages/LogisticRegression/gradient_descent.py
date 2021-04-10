@@ -227,7 +227,7 @@ def _calc_inner(X, w):
     :param w: n x 1 vector
     :return: L x 1 vector
     """
-    return np.matmul(X, w)
+    return X @ w #np.matmul(X, w)  # matrix multiplication that works on sparse and dense matrices
 
 
 # tested
@@ -265,7 +265,7 @@ def _calc_gradient(X, y_true, y_pred):
     :return: Gradient in the form of an n x 1 vector
     """
     y_err = y_true - y_pred
-    return np.matmul(X.T, y_err)
+    return X.T @ y_err  #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
 
 
 # tested

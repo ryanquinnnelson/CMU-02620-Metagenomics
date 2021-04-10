@@ -18,7 +18,7 @@ def test__add_x0_one_col_multiple_samples():
     expected = np.array([[1, 1],
                          [1, 2],
                          [1, 3]])
-    np.testing.assert_array_equal(actual, expected)
+    np.testing.assert_array_equal(actual.toarray(), expected)
 
 
 def test__add_x0_two_cols_multiple_samples():
@@ -29,7 +29,7 @@ def test__add_x0_two_cols_multiple_samples():
     expected = np.array([[1, 1, 9],
                          [1, 2, 7],
                          [1, 3, 8]])
-    np.testing.assert_array_equal(actual, expected)
+    np.testing.assert_array_equal(actual.toarray(), expected)
 
 
 def test__init__():

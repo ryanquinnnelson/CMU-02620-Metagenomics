@@ -349,7 +349,7 @@ class MulticlassLogisticRegression2:
             predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
             y_pred_proba_T[k] = predict_proba_k
 
-        y_pred_proba = y_pred_proba_T.T  # no need to standardize results
+        y_pred_proba = y_pred_proba_T.T  # no need to standardize results because the largest probability is the same
 
         # for each sample choose the class with the highest probability
         y_pred = _get_largest_proba(y_pred_proba)
