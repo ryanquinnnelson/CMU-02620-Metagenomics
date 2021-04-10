@@ -30,9 +30,9 @@ def _add_x0(X):
     rows = len(X)
     ones = np.ones(rows)
     X_aug = np.insert(X, 0, ones, axis=1)
-    X_sparse = csr_matrix(X_aug, dtype=np.float64)
-    return X_sparse
-
+    # X_sparse = csr_matrix(X_aug, dtype=np.float64)
+    # return X_sparse
+    return X_aug
 
 class LogisticRegression:
     """

@@ -5,6 +5,7 @@ so that its first column is 1's).
 """
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 """
 Note 1 - Explanation of _calc_inner()
@@ -227,7 +228,9 @@ def _calc_inner(X, w):
     :param w: n x 1 vector
     :return: L x 1 vector
     """
-    return X @ w #np.matmul(X, w)  # matrix multiplication that works on sparse and dense matrices
+    # w_sparse = csr_matrix(w, dtype=np.float64)  #so that matrix product is also sparse
+    # return X @ w_sparse # matrix multiplication that works on sparse and dense matrices
+    return np.matmul(X, w)
 
 
 # tested
@@ -265,7 +268,8 @@ def _calc_gradient(X, y_true, y_pred):
     :return: Gradient in the form of an n x 1 vector
     """
     y_err = y_true - y_pred
-    return X.T @ y_err  #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
+    # return X.T @ y_err  #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
+    return np.matmul(X.T, y_err)
 
 
 # tested
