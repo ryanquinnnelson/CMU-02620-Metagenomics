@@ -14,3 +14,8 @@ experiment,category,classifier,training shape,sample_length,coverage,k,max_depth
 8.01,multiclass,Random Forest,"(2793, 39585)",100,1,10,,100,0.1569767441860465,species_recall
 8.01,multiclass,Random Forest,"(2793, 31786)",100,1,12,,100,0.1569767441860465,species_recall
 8.01,multiclass,Random Forest,"(27638, 400)",100,10,1,,100,0.33935654473336274,species_recall
+8.01,multiclass,Random Forest,"(27638, 800)",100,10,2,,100,0.3422212428382547,species_recall
+8.01,multiclass,Random Forest,"(27638, 6400)",100,10,4,,100,0.335243132069928,species_recall
+8.01,multiclass,Random Forest,"(27638, 65241)",100,10,6,,100,0.3141618921698252,species_recall
+8.01,multiclass,Random Forest,"(27638, 300490)",100,10,8,,100,0.24812692816218598,species_recall
+8.01,multiclass,Random Forest,"(27638, 350891)",100,10,10,,100,0.23747612751579256,species_recall
