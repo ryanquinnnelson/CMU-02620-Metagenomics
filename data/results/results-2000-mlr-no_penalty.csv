@@ -76,3 +76,10 @@ experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsil
 4.03,multiclass,Logistic Regression,"(137, 10003)",400,10,8,0.01,0.01,none,0,100000,0.132352941,species_recall
 4.03,multiclass,Logistic Regression,"(137, 8033)",400,10,10,0.01,0.01,none,0,100000,0.220588235,species_recall
 4.03,multiclass,Logistic Regression,"(137, 6631)",400,10,12,0.01,0.01,none,0,100000,0.235294118,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 400)",100,400,1,0.01,0.01,none,0,100,0.180515493,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 800)",100,400,2,0.01,0.01,none,0,100,0.438727087,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 6400)",100,400,4,0.01,0.01,none,0,100,0.84786452,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 46691)",100,400,6,0.01,0.01,none,0,100,0.966781427,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 77733)",100,400,8,0.01,0.01,none,0,100,0.961942868,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 73479)",100,400,10,0.01,0.01,none,0,100,0.95933749,species_recall
+6.03,multiclass,Logistic Regression,"(21817, 59669)",100,400,12,0.01,0.01,none,0,100,0.951242207,species_recall
