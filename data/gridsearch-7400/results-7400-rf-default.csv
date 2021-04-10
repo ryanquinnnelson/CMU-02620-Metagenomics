@@ -23,3 +23,4 @@ experiment,category,classifier,training shape,sample_length,coverage,k,max_depth
 8.01,multiclass,Random Forest,"(276108, 400)",100,100,1,,100,0.6892951159609982,species_recall
 8.01,multiclass,Random Forest,"(276108, 800)",100,100,2,,100,0.6903907525332,species_recall
 8.01,multiclass,Random Forest,"(276108, 6400)",100,100,4,,100,0.6878465226407048,species_recall
+8.01,multiclass,Random Forest,"(276108, 65536)",100,100,6,,100,0.6863170433989735,species_recall
