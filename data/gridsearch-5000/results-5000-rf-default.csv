@@ -1,0 +1,14 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,max_depth,n_estimators,score,score type
+11.01,multiclass,Random Forest,"(165, 400)",100,0.1,1,30,50,0.2804878048780488,species_recall
+11.01,multiclass,Random Forest,"(165, 800)",100,0.1,2,30,50,0.24390243902439024,species_recall
+11.01,multiclass,Random Forest,"(165, 3649)",100,0.1,4,30,50,0.23170731707317074,species_recall
+11.01,multiclass,Random Forest,"(165, 3582)",100,0.1,6,30,50,0.2073170731707317,species_recall
+11.01,multiclass,Random Forest,"(1425, 400)",100,1,1,30,50,0.3385490753911807,species_recall
+11.01,multiclass,Random Forest,"(1425, 800)",100,1,2,30,50,0.3314366998577525,species_recall
+11.01,multiclass,Random Forest,"(1425, 6376)",100,1,4,30,50,0.2332859174964438,species_recall
+11.01,multiclass,Random Forest,"(1425, 23815)",100,1,6,30,50,0.22901849217638692,species_recall
+11.01,multiclass,Random Forest,"(14070, 400)",100,10,1,30,50,0.3974025974025974,species_recall
+11.01,multiclass,Random Forest,"(14070, 800)",100,10,2,30,50,0.3952380952380952,species_recall
+11.01,multiclass,Random Forest,"(14070, 6400)",100,10,4,30,50,0.26940836940836943,species_recall
+11.01,multiclass,Random Forest,"(14070, 62800)",100,10,6,30,50,0.23275613275613274,species_recall
+11.01,multiclass,Random Forest,"(140485, 400)",100,100,1,30,50,0.7001228412457547,species_recall
