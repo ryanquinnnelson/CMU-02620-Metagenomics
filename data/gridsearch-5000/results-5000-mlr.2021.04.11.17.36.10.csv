@@ -1,2 +1,0 @@
-experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsilon,penalty,l2_lambda,max_iter,score,score type
-12.01,multiclass,Logistic Regression,"(70255, 800)",200,100,1,0.02,0.01,,0,100,0.23156282510692405,species_recall
