@@ -1,0 +1,11 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,penalty,multi_class,class_weight,score,score type
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 400)",100,1,1,l2,auto,balanced,0.22617354196301565,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 800)",100,1,2,l2,auto,balanced,0.2901849217638691,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 6376)",100,1,4,l2,auto,balanced,0.30440967283072545,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 23815)",100,1,6,l2,auto,balanced,0.2546230440967283,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 23478)",100,1,8,l2,auto,balanced,0.24751066856330015,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 20066)",100,1,10,l2,auto,balanced,0.27311522048364156,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(1425, 16089)",100,1,12,l2,auto,balanced,0.25604551920341395,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(14070, 400)",100,10,1,l2,auto,balanced,0.17604617604617603,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(14070, 800)",100,10,2,l2,auto,balanced,0.2253968253968254,species_recall
+10.01,multiclass,Logistic Regression (sklearn),"(14070, 6400)",100,10,4,l2,auto,balanced,0.3759018759018759,species_recall
