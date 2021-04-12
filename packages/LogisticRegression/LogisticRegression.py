@@ -1,6 +1,7 @@
 import numpy as np
 import packages.LogisticRegression.gradient_descent as gd
 from scipy.sparse import csr_matrix
+from scipy.sparse import hstack
 
 
 # tested
@@ -21,17 +22,18 @@ def _add_x0(X):
     """
     Adds a column to the left of matrix X with each element set to 1.
     Todo - make this function work for a single sample
+    Todo - make adding a column to a sparse matrix retain the sparse matrix
 
     :param X: N x J matrix, where N is the number of samples and J is the number of features.
             Assumes X is not augmented for w0 yet.
 
     :return: N x (J+1) matrix
     """
-    rows = len(X)
+    X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
+    rows = X_sparse.shape[0]
     ones = np.ones(rows)
-    X_aug = np.insert(X, 0, ones, axis=1)
-    # X_sparse = csr_matrix(X_aug, dtype=np.float64)
-    # return X_sparse
+    # X_aug = np.insert(X, 0, ones, axis=1)
+    X_aug = hstack((ones[:, None], X_sparse))
     return X_aug
 
 
