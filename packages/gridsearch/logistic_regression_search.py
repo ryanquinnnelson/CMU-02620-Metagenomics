@@ -201,10 +201,10 @@ def main():
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [200]  # ,200,400
-    list_coverage = [100]  # 1,10,100,
-    list_k = [6]  # ,8,10,12
-    list_eta = [0.05]
+    list_sample_length = [100, 200, 400]  # ,200,400
+    list_coverage = [1, 10, 100, 200, 400]  # 1,10,100,
+    list_k = [1, 2, 4, 6, 8, 10, 12]
+    list_eta = [0.1]
     list_epsilon = [0.01]
     list_penalty = [None]
     list_l2_lambda = [0]
