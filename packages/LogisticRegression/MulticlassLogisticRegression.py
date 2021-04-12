@@ -42,7 +42,6 @@ def _add_x0(X):
     """
     Adds a column to the left of matrix X with each element set to 1.
     :param X:
-    :param rows:
     :return:
     """
     rows = X.shape[0]
@@ -101,8 +100,6 @@ def _calc_conditional_proba_R(inner_sums, R):
     :param R:
     :return:
     """
-    n_classes = len(inner_sums)
-    n_samples = inner_sums.shape[1]
 
     # get sums for class R so they can be subtracted from total
     R_sums = inner_sums[R]
@@ -184,7 +181,6 @@ def _update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k):
 
     # update y_pred_proba_highest with higher probabilities from kth class
     y_pred_proba_highest[idx] = y_pred_proba_k[idx]
-
 
 
 class MulticlassLogisticRegression:
