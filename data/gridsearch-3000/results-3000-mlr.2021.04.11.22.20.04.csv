@@ -1,0 +1,11 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsilon,penalty,l2_lambda,max_iter,score,score type
+14.01,multiclass,Logistic Regression,"(314, 400)",100,1,1,0.05,0.01,,0,200,0.23225806451612904,species_recall
+14.01,multiclass,Logistic Regression,"(314, 800)",100,1,2,0.05,0.01,,0,200,0.22580645161290322,species_recall
+14.01,multiclass,Logistic Regression,"(314, 4820)",100,1,4,0.05,0.01,,0,200,0.23870967741935484,species_recall
+14.01,multiclass,Logistic Regression,"(314, 6499)",100,1,6,0.05,0.01,,0,200,0.24516129032258063,species_recall
+14.01,multiclass,Logistic Regression,"(314, 5341)",100,1,8,0.05,0.01,,0,200,0.23870967741935484,species_recall
+14.01,multiclass,Logistic Regression,"(314, 4476)",100,1,10,0.05,0.01,,0,200,0.22580645161290322,species_recall
+14.01,multiclass,Logistic Regression,"(314, 3586)",100,1,12,0.05,0.01,,0,200,0.23225806451612904,species_recall
+14.01,multiclass,Logistic Regression,"(3073, 400)",100,10,1,0.05,0.01,,0,200,0.2528052805280528,species_recall
+14.01,multiclass,Logistic Regression,"(3073, 800)",100,10,2,0.05,0.01,,0,200,0.21716171617161717,species_recall
+14.01,multiclass,Logistic Regression,"(3073, 6399)",100,10,4,0.05,0.01,,0,200,0.3716171617161716,species_recall
