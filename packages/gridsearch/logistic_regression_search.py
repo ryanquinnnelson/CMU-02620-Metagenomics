@@ -197,7 +197,7 @@ def main():
               'score',
               'score type']
 
-    experiment = '16.01'
+    experiment = '16.03'
     score_type = 'species_recall'
 
     # combinations to try
@@ -206,9 +206,9 @@ def main():
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_eta = [0.1]
     list_epsilon = [0.01]
-    list_penalty = ['l2']
-    list_l2_lambda = [1]
-    list_max_iter = [200]
+    list_penalty = [None]
+    list_l2_lambda = [0]
+    list_max_iter = [500]
 
     grid_search_multiclass_mlr(seq_file,
                                taxid_file,
