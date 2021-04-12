@@ -167,6 +167,10 @@ X                y_err      X_aug                w
                                 | d w1 |    | (x11*y1) + (x21*y2) + (x31*y3) |
 gradient = (X_aug)^T(y_err) =   | d w2 | =  | (x12*y1) + (x22*y2) + (x32*y3) |
                                 | d w3 |    | (x13*y1) + (x23*y2) + (x33*y3) |
+
+Note: We can also perform this in the opposite direction, if y_err is a row vector.
+
+gradient = (y_err)(X_aug)
 """
 
 """
@@ -188,7 +192,7 @@ l(W) = SUM_L [ Y^L * A ] - SUM_L [ ln( 1 + exp(A)) ]
 """
 
 
-# tested
+# tested, no need to be sparse
 def _update_weights(w, eta, gradient):
     """
     Updates regression coefficients using the following formula:
@@ -200,9 +204,11 @@ def _update_weights(w, eta, gradient):
     :return: updated weights
     """
     change = eta * gradient
-    return w + change
+    w_updated = w + change
+    return w_updated
 
 
+# tested, no need to be sparse
 def _update_weights_l2(w, eta, gradient, l1_lambda):
     """
     Updates regression coefficients using the following formula:
@@ -219,7 +225,7 @@ def _update_weights_l2(w, eta, gradient, l1_lambda):
     return w_updated
 
 
-# tested
+# tested, sparse-enabled
 def _calc_inner(X, w):
     """
     Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 for explanation of function logic.
@@ -230,10 +236,13 @@ def _calc_inner(X, w):
     """
     # w_sparse = csr_matrix(w, dtype=np.float64)  #so that matrix product is also sparse
     # return X @ w_sparse # matrix multiplication that works on sparse and dense matrices
-    return np.matmul(X, w)
+    X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
+    w_sparse = csr_matrix(w)  # convert to sparse matrix for efficient matrix multiplication
+    inner = w_sparse @ X_sparse.T
+    return inner
 
 
-# tested
+# tested, sparse-enabled
 def get_y_predictions(X, w):
     """
     Obtains predicted labels for all L samples, using the following formula:
@@ -251,13 +260,14 @@ def get_y_predictions(X, w):
     num_rows = X.shape[0]
 
     Xw = _calc_inner(X, w)
-    top = np.exp(Xw)
+    Xw_dense = Xw.toarray()[0]  # can be converted to dense matrix because Xw is a vector
+    top = np.exp(Xw_dense)
     ones = np.ones(num_rows)
     bottom = ones + top
     return top / bottom
 
 
-# tested
+# tested, sparse-enabled
 def _calc_gradient(X, y_true, y_pred):
     """
     Calculates the gradient. See Note 2 for explanation of function logic.
@@ -268,11 +278,13 @@ def _calc_gradient(X, y_true, y_pred):
     :return: Gradient in the form of an n x 1 vector
     """
     y_err = y_true - y_pred
-    # return X.T @ y_err  #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
-    return np.matmul(X.T, y_err)
+    y_err_sparse = csr_matrix(y_err)  # convert to sparse matrix for efficient matrix multiplication
+    X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
+    grad_T = y_err_sparse @ X_sparse
+    return grad_T.toarray()[0]  # return np.matmul(X.T, y_err)
 
 
-# tested
+# tested, sparse-enabled
 def _calc_left_half_log_likelihood(X, y_true, w):
     """
     Calculates the YA sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
@@ -284,10 +296,10 @@ def _calc_left_half_log_likelihood(X, y_true, w):
     :return: scalar
     """
     Xw = _calc_inner(X, w)
-    return np.dot(y_true, Xw)
+    return Xw.dot(y_true)
 
 
-# tested
+# tested, sparse-enabled
 def _calc_right_half_log_likelihood(X, w):
     """
     Calculates the ln(1 + exp(A)) sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
@@ -298,14 +310,15 @@ def _calc_right_half_log_likelihood(X, w):
     :return: scalar
     """
     Xw = _calc_inner(X, w)
+    Xw_dense = Xw.toarray()[0]  # can be converted to dense matrix because Xw is a vector
     num_rows = X.shape[0]
     ones = np.ones(num_rows)  # for each sample
-    inner = ones + np.exp(Xw)
+    inner = ones + np.exp(Xw_dense)
     ln_Xw = np.log(inner)
     return np.sum(ln_Xw)  # sum over L samples
 
 
-# tested
+# tested, sparse-enabled
 def _calc_log_likelihood(X, y_true, w):
     """
     Calculates log likelihood. See Note 3 for explanation of function logic.
@@ -339,7 +352,6 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
             and returns the current weights at that point.
     :return: n x 1 vector, weight of each feature at convergence.
     """
-
     # set initial weights
     weights = w
 
@@ -354,7 +366,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
         count += 1
         if count > max_iter:
             print('STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.')
-            break  # stop descending because something is probably wrong
+            break  # stop descending
 
         # update weights
         y_pred = get_y_predictions(X, weights)

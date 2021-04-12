@@ -38,106 +38,6 @@ def _convert_to_binary_classes(y, label):
 
 
 # tested
-def _add_x0(X):
-    """
-    Adds a column to the left of matrix X with each element set to 1.
-    :param X:
-    :param rows:
-    :return:
-    """
-    rows = X.shape[0]
-    ones = np.ones(rows)
-    return np.insert(X, 0, ones, axis=1)
-
-
-# tested
-def _calculate_outer_sum(inner_sums, R_sums):
-    """
-    It is more efficient to subtract one row from another row than to create a second matrix with R-1 rows.
-
-    :param inner_sums:
-    :return:
-    """
-
-    # sum K-1 classes
-    R_minus_one_sums = np.sum(inner_sums, axis=0) - R_sums
-
-    # add 1 to each sample value
-    n_samples = inner_sums.shape[1]
-    ones = np.ones((n_samples,))
-    bottom = ones + R_minus_one_sums
-
-    return bottom
-
-
-# tested
-def _calculate_inner_sums(X, W):
-    """
-    Calculates all inner sums at the same time. After performing each class inner summation separately per the method
-    in Note 1 gradient_descent.py, I found that it was possible to get the same results by modifying the order and
-    terms of the matrix multiplication.
-
-    :param X:
-    :param W:
-    :return:
-    """
-    summations = np.matmul(W, X.T)
-    inner_sums = np.exp(summations)
-    return inner_sums
-
-
-# tested
-def _calc_conditional_proba_R(inner_sums, R):
-    """
-
-    P(Y=R|X^L) = 1 / a
-
-    where
-    - a = 1 + SUM_k=1^R-1 exp(w_k0 + SUM_i=1^n w_ki X_i^L)
-    - R: the Rth class
-    - n: number of samples
-
-    :param inner_sums:
-    :param R:
-    :return:
-    """
-    n_classes = len(inner_sums)
-    n_samples = inner_sums.shape[1]
-
-    # get sums for class R so they can be subtracted from total
-    R_sums = inner_sums[R]
-
-    # sum up the bottom terms without sums from class R
-    bottom = _calculate_outer_sum(inner_sums, R_sums)
-
-    y_pred = 1 / bottom
-    return y_pred
-
-
-# tested
-def _calc_all_conditional_proba(X, W):
-    """
-
-    :param X: augmented data
-    :param W:
-    :return:
-    """
-
-    N = len(X)  # number of samples
-    K = len(W)  # number of classes
-
-    # calculate inner sums for reuse
-    inner_sums = _calculate_inner_sums(X, W)
-
-    predictions = np.zeros((K, N))  # transposed for ease of row replacement
-    for k in range(K):
-        proba_k = _calc_conditional_proba_R(inner_sums, k)
-        predictions[k] = proba_k
-
-    return predictions.T
-
-
-# tested
 def _standardize_probabilities(y_pred_proba):
     """
 
@@ -150,108 +50,30 @@ def _standardize_probabilities(y_pred_proba):
     return standardized
 
 
-# tested
-def _get_largest_proba(y_predict_proba):
+def _update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k):
     """
+    Updates label predictions by comparing current highest probabilities for each sample
+    with the predicted probabilities for the kth class.
 
-    :param y_predict_proba:
+    Updates highest probabilities for any samples if kth class prediction probabilities are higher.
+
+    :param y_pred:
+    :param y_pred_proba_highest:
+    :param y_pred_proba_k:
+    :param k:
     :return:
     """
-    return np.argmax(y_predict_proba, axis=1)
+    # determine if any probabilities for kth class are higher than the current highest probabilities
+    diff = y_pred_proba_k - y_pred_proba_highest
 
+    # get indexes of all samples where kth class probability was higher
+    idx = np.argwhere(diff > 0)
 
-class MulticlassLogisticRegression:
-    """
-    Implements multiclass logistic regression.
+    # update those indexes in y_pred to be equal to k
+    y_pred[idx] = k
 
-    This version stores the regression coefficient weights from each of the binary Logistic Regression classifiers fit
-    to each class, and it uses the weights for predictions.
-    """
-
-    # tested
-    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
-        """
-
-        :param eta:
-        :param epsilon:
-        :param penalty:
-        :param l2_lambda:
-        :param max_iter:
-        """
-        self.eta = eta
-        self.epsilon = epsilon
-        self.weights = None
-        self.penalty = penalty
-        self.l2_lambda = l2_lambda
-        self.max_iter = max_iter
-
-    # tested
-    def fit(self, X, y):
-        """
-
-        :param X: Assumes X is not augmented.
-        :param y:
-        :return:
-        """
-
-        # determine how many binary classifiers must be trained
-        n_classifiers = _calculate_number_classes(y)
-        J = X.shape[1]
-
-        # train binary classifier for each class
-        weights = np.zeros((n_classifiers, J + 1))  # extra col for w0
-        for i in range(n_classifiers):
-            lr = LogisticRegression(eta=self.eta,
-                                    epsilon=self.epsilon,
-                                    penalty=self.penalty,
-                                    l2_lambda=self.l2_lambda,
-                                    max_iter=self.max_iter)
-
-            # convert to binary classes
-            y_binary = _convert_to_binary_classes(y, i)
-
-            # fit binary classifier
-            lr.fit(X, y_binary)
-
-            # retain weights for this classifier
-            weights[i] = lr.weights
-
-        self.weights = weights
-        return self
-
-    def predict_proba(self, X):
-        """
-        Calculates probabilities for each class for each sample.
-        Todo - Determine if standardization should really be necessary.
-
-        :param X: Assumes X is not augmented.
-        :return: N x K matrix
-        """
-        # augment the data so w0 makes sense
-        X_aug = _add_x0(X)
-
-        # calculate probabilities per class
-        y_pred_proba = _calc_all_conditional_proba(X_aug, self.weights)
-        y_pred_proba_standardized = _standardize_probabilities(y_pred_proba)
-
-        return y_pred_proba_standardized
-
-    def predict(self, X):
-        """
-        Selects the class which has the highest probability for each sample.
-
-        :param X:
-        :return:
-        """
-        # augment the data so w0 makes sense
-        X_aug = _add_x0(X)
-
-        # calculate probabilities per class
-        y_pred_proba = _calc_all_conditional_proba(X_aug, self.weights)
-
-        # for each sample choose the class with the highest probability
-        y_pred = _get_largest_proba(y_pred_proba)
-        return y_pred
+    # update y_pred_proba_highest with higher probabilities from kth class
+    y_pred_proba_highest[idx] = y_pred_proba_k[idx]
 
 
 class MulticlassLogisticRegression2:
@@ -279,7 +101,7 @@ class MulticlassLogisticRegression2:
         self.l2_lambda = l2_lambda
         self.max_iter = max_iter
 
-    # tested
+    # tested, sparse-enabled
     def fit(self, X, y):
         """
         Todo - add ability to turn off verbose printing.
@@ -313,7 +135,7 @@ class MulticlassLogisticRegression2:
         self.classifiers = classifiers
         return self
 
-    # tested
+    # tested, sparse-enabled
     def predict_proba(self, X):
         """
         Calculates probabilities for each class for each sample.
@@ -322,7 +144,7 @@ class MulticlassLogisticRegression2:
         :return: N x K matrix
         """
         K = len(self.classifiers)
-        N = len(X)
+        N = X.shape[0]
         y_pred_proba_T = np.zeros((K, N))  # transposed to make row replacement easier
 
         for k, classifier in enumerate(self.classifiers):
@@ -333,7 +155,7 @@ class MulticlassLogisticRegression2:
         y_pred_proba_standardized = _standardize_probabilities(y_pred_proba)
         return y_pred_proba_standardized
 
-    # tested
+    # tested, sparse-enabled
     def predict(self, X):
         """
         Selects the class which has the highest probability for each sample.
@@ -341,16 +163,12 @@ class MulticlassLogisticRegression2:
         :param X: Assumes X is not augmented.
         :return:
         """
-        K = len(self.classifiers)
-        N = len(X)
-        y_pred_proba_T = np.zeros((K, N))  # transposed to make row replacement easier
+        N = X.shape[0]
+        y_pred_proba_highest = np.zeros((N,))  # contains highest probabilities for each sample so far
+        y_pred = np.zeros((N,), dtype=np.int8)  # doesn't allow more than 127 classes
 
         for k, classifier in enumerate(self.classifiers):
             predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
-            y_pred_proba_T[k] = predict_proba_k
+            _update_predictions(y_pred, y_pred_proba_highest, predict_proba_k, k)
 
-        y_pred_proba = y_pred_proba_T.T  # no need to standardize results because the largest probability is the same
-
-        # for each sample choose the class with the highest probability
-        y_pred = _get_largest_proba(y_pred_proba)
         return y_pred
