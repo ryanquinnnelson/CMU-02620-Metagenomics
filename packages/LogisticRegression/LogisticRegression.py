@@ -22,7 +22,6 @@ def _add_x0(X):
     """
     Adds a column to the left of matrix X with each element set to 1.
     Todo - make this function work for a single sample
-    Todo - make adding a column to a sparse matrix retain the sparse matrix
 
     :param X: N x J matrix, where N is the number of samples and J is the number of features.
             Assumes X is not augmented for w0 yet.
