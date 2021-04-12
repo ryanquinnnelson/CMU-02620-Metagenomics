@@ -68,11 +68,14 @@ class LogisticRegression:
         # append imaginary column X_0=1 to accommodate w_0
         X_aug = _add_x0(X)
 
+        # convert to sparse matrix
+        X_aug_sparse = csr_matrix(X_aug)
+
         # set initial weights
-        weights = _set_weights(X_aug)
+        weights = _set_weights(X_aug_sparse)
 
         # perform gradient descent until convergence
-        weights = gd.gradient_descent(X_aug, y, weights, self.eta, self.epsilon,
+        weights = gd.gradient_descent(X_aug_sparse, y, weights, self.eta, self.epsilon,
                                       self.penalty, self.l2_lambda, self.max_iter)
         self.weights = weights
 
@@ -89,7 +92,10 @@ class LogisticRegression:
         # append imaginary column X_0=1 to accommodate w_0
         X_aug = _add_x0(X)
 
-        y_pred = gd.get_y_predictions(X_aug, self.weights)
+        # convert to sparse matrix
+        X_aug_sparse = csr_matrix(X_aug)
+
+        y_pred = gd.get_y_predictions(X_aug_sparse, self.weights)
         return np.round(y_pred)
 
     def predict_proba(self, X):
@@ -103,8 +109,11 @@ class LogisticRegression:
         # append imaginary column X_0=1 to accommodate w_0
         X_aug = _add_x0(X)
 
+        # convert to sparse matrix
+        X_aug_sparse = csr_matrix(X_aug)
+
         # predictions for Y=1
-        y_pred_1 = gd.get_y_predictions(X_aug, self.weights)
+        y_pred_1 = gd.get_y_predictions(X_aug_sparse, self.weights)
 
         # predictions for Y=0
         rows = y_pred_1.shape[0]

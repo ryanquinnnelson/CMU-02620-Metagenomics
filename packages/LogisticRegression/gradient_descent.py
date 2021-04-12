@@ -341,9 +341,6 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     """
     Performs gradient descent to derive optimal regression coefficients.
 
-    Todo - convert to sparse version of _calc_log_likelihood() when ready.
-    Todo - convert to sparse version of get_y_predictions() when ready.
-
     :param X: L x n matrix, where L is the number of samples and n is the number of features
     :param y_true: L x 1 vector
     :param w: n x 1 vector
@@ -355,7 +352,6 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
             and returns the current weights at that point.
     :return: n x 1 vector, weight of each feature at convergence.
     """
-
     # set initial weights
     weights = w
 
