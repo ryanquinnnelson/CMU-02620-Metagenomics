@@ -34,6 +34,7 @@ def _add_x0(X):
     # return X_sparse
     return X_aug
 
+
 class LogisticRegression:
     """
     Implements logistic regression using gradient descent as defined by Machine Learning (Mitchell).
