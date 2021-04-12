@@ -121,6 +121,29 @@ def grid_search_multiclass_mlr(seq_file,
                                fields,
                                experiment,
                                score_type):
+    """
+
+    Todo - add ability to track runtime
+
+    :param seq_file:
+    :param taxid_file:
+    :param output_dir:
+    :param pattern:
+    :param list_sample_length:
+    :param list_coverage:
+    :param list_k:
+    :param list_eta:
+    :param list_epsilon:
+    :param list_penalty:
+    :param list_l2_lambda:
+    :param list_max_iter:
+    :param seed:
+    :param grid_search_file:
+    :param fields:
+    :param experiment:
+    :param score_type:
+    :return:
+    """
     # set up grid search results file
     append_results_to_file(grid_search_file, fields)
 
@@ -174,13 +197,13 @@ def grid_search_multiclass_mlr(seq_file,
 
 def main():
     # parameters
-    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-3000.fasta'
-    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-3000.taxid'
-    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-3000'
+    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.fasta'
+    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.taxid'
+    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-5000'
     pattern = 'fragments*.npy'
     seed = 42
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
-    grid_search_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/gridsearch-3000/results-3000-mlr.{}.csv'.format(
+    grid_search_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/gridsearch-5000/results-5000-mlr.{}.csv'.format(
         date_time)
     fields = ['experiment',
               'category',
@@ -197,18 +220,18 @@ def main():
               'score',
               'score type']
 
-    experiment = '16.03'
+    experiment = '16.04'
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [100, 200, 400]  # ,200,400
-    list_coverage = [1, 10, 100, 200, 400]  # 1,10,100,
+    list_sample_length = [100, 200, 400]
+    list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_eta = [0.1]
     list_epsilon = [0.01]
     list_penalty = [None]
     list_l2_lambda = [0]
-    list_max_iter = [500]
+    list_max_iter = [200]
 
     grid_search_multiclass_mlr(seq_file,
                                taxid_file,
