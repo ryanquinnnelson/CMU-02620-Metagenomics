@@ -53,6 +53,7 @@ def encode_fragments(output_dir, pattern, k, seed=None):
     n_classes_train = 0
     n_classes_test = 0
     X_train, X_test, y_train, y_test = None, None, None, None
+    count = 0
     while n_classes_train < n_classes or n_classes_test < n_classes:
         if n_classes_train != 0:
             print('Encoding failed')
@@ -61,6 +62,12 @@ def encode_fragments(output_dir, pattern, k, seed=None):
         X_train, X_test, y_train, y_test = train_test_split(X_enc, y_enc, test_size=0.33, random_state=seed)
         n_classes_train = len(np.unique(y_train))
         n_classes_test = len(np.unique(y_test))
+        count += 1
+
+        if count > 1000:
+            msg = 'Not possible for both training and test sets to contain all classes.'
+            msg2 = ' (n_classes, training set length, test set length):'
+            raise ValueError(msg + msg2 + str(n_classes), len(y_train), len(y_test))
 
     print('Encoding succeeded.')
     return X_train, X_test, y_train, y_test
@@ -197,14 +204,14 @@ def grid_search_multiclass_mlr(seq_file,
 
 def main():
     # parameters
-    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.fasta'
-    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.taxid'
-    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-5000'
+    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-2000.fasta'
+    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-2000.taxid'
+    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-2000'
     pattern = 'fragments*.npy'
-    seed = 42
+    seed = None
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
     data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
-    grid_search_file = data_dir + 'data/gridsearch-5000/results-5000-mlr.{}.csv'.format(date_time)
+    grid_search_file = data_dir + 'data/gridsearch-2000/results-2000-mlr.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
@@ -224,7 +231,7 @@ def main():
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [100, 200, 400]
+    list_sample_length = [100, 200, 400] * 5
     list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_eta = [0.1]
