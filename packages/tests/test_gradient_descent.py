@@ -1,5 +1,6 @@
 import numpy as np
 import packages.LogisticRegression.gradient_descent as gd
+from scipy.sparse import csr_matrix
 
 
 def test__calc_inner():
@@ -32,6 +33,19 @@ def test__calc_gradient():
     y_pred = np.array([1, 1, 0])
     expected = np.array([0, -4, 1, 2])
     actual = gd._calc_gradient(X, y_true, y_pred)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test__calc_gradient__sparse():
+    X = csr_matrix(np.array([[1, 1, 1, 1],
+                             [1, 5, 1, 1],
+                             [1, 1, 2, 3]]))
+
+    y_true = csr_matrix(np.array([1, 0, 1]))
+    y_pred = csr_matrix(np.array([1, 1, 0]))
+
+    expected = np.array([[0, -4, 1, 2]])  # matrix instead
+    actual = gd._calc_gradient(X, y_true, y_pred).toarray()
     np.testing.assert_array_equal(actual, expected)
 
 

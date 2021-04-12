@@ -268,8 +268,9 @@ def _calc_gradient(X, y_true, y_pred):
     :return: Gradient in the form of an n x 1 vector
     """
     y_err = y_true - y_pred
-    # return X.T @ y_err  #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
-    return np.matmul(X.T, y_err)
+    grad_T = y_err @ X
+    return grad_T #np.matmul(X.T, y_err)  # matrix multiplication that works on sparse and dense matrices
+    # return np.matmul(X.T, y_err)
 
 
 # tested
