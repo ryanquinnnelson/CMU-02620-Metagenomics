@@ -214,13 +214,28 @@ def test__standardize_probabilities():
 
 def test__get_largest_proba():
     y_pred_proba = np.array([[0.61204123, 0.18738013, 0.20057865],
-                             [0.00988405, 0.98023551, 0.00988044],
-                             [0.17089045, 0.17393603, 0.65517352],
-                             [0.30960227, 0.21658015, 0.47381757]])
+                         [0.00988405, 0.98023551, 0.00988044],
+                         [0.17089045, 0.17393603, 0.65517352],
+                         [0.30960227, 0.21658015, 0.47381757]])
 
-    expected = np.array([0, 1, 2, 2])
+    expected = np.array([0,1,2,2])
     actual = mlr._get_largest_proba(y_pred_proba)
     np.testing.assert_array_equal(actual, expected)
+
+
+def test__update_predictions():
+
+    y_pred = np.array([1, 1, 1])
+    y_pred_proba_k = np.array([0.6, 0.4, 0.8])
+    y_pred_proba_highest = np.array([0.5, 0.6, 0.7])
+    k = 3
+
+    mlr._update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k)
+    y_pred_expected = np.array([3,1,3])
+    y_pred_proba_highest_expected = np.array([0.6,0.6,0.8])
+
+    np.testing.assert_array_equal(y_pred,y_pred_expected)
+    np.testing.assert_array_equal(y_pred_proba_highest, y_pred_proba_highest_expected)
 
 
 def test__init__():

@@ -160,6 +160,33 @@ def _get_largest_proba(y_predict_proba):
     return np.argmax(y_predict_proba, axis=1)
 
 
+def _update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k):
+    """
+    Updates label predictions by comparing current highest probabilities for each sample
+    with the predicted probabilities for the kth class.
+
+    Updates highest probabilities for any samples if kth class prediction probabilities are higher.
+
+    :param y_pred:
+    :param y_pred_proba_highest:
+    :param y_pred_proba_k:
+    :param k:
+    :return:
+    """
+    # determine if any probabilities for kth class are higher than the current highest probabilities
+    diff = y_pred_proba_k - y_pred_proba_highest
+
+    # get indexes of all samples where kth class probability was higher
+    idx = np.argwhere(diff > 0)
+
+    # update those indexes in y_pred to be equal to k
+    y_pred[idx] = k
+
+    # update y_pred_proba_highest with higher probabilities from kth class
+    y_pred_proba_highest[idx] = y_pred_proba_k[idx]
+
+
+
 class MulticlassLogisticRegression:
     """
     Implements multiclass logistic regression.
@@ -341,16 +368,12 @@ class MulticlassLogisticRegression2:
         :param X: Assumes X is not augmented.
         :return:
         """
-        K = len(self.classifiers)
         N = len(X)
-        y_pred_proba_T = np.zeros((K, N))  # transposed to make row replacement easier
+        y_pred_proba_highest = np.zeros((N,))  # contains highest probabilities for each sample so far
+        y_pred = np.zeros((N,), dtype=np.int8)  # doesn't allow more than 127 classes
 
         for k, classifier in enumerate(self.classifiers):
             predict_proba_k = classifier.predict_proba(X)[:, 1]  # probability of 1 for this class
-            y_pred_proba_T[k] = predict_proba_k
+            _update_predictions(y_pred, y_pred_proba_highest, predict_proba_k, k)
 
-        y_pred_proba = y_pred_proba_T.T  # no need to standardize results because the largest probability is the same
-
-        # for each sample choose the class with the highest probability
-        y_pred = _get_largest_proba(y_pred_proba)
         return y_pred
