@@ -33,7 +33,7 @@ def build_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, s
     sampling2.generate_fragment_data(seq_file, taxid_file, output_dir, sample_length, coverage, seed)
 
 
-def encode_fragments(output_dir, pattern, k, seed):
+def encode_fragments(output_dir, pattern, k, seed=None):
     """
     Converts sparse matrix to array before splitting.
     """
@@ -52,15 +52,15 @@ def encode_fragments(output_dir, pattern, k, seed):
     #     print('n_classes:',n_classes)
     n_classes_train = 0
     n_classes_test = 0
+    X_train, X_test, y_train, y_test = None, None, None, None
     while n_classes_train < n_classes or n_classes_test < n_classes:
-        print('Encoding failed')
+        if n_classes_train != 0:
+            print('Encoding failed')
 
         # split data into test and training
-        X_train, X_test, y_train, y_test = train_test_split(X_enc, y_enc, test_size=0.33)
+        X_train, X_test, y_train, y_test = train_test_split(X_enc, y_enc, test_size=0.33, random_state=seed)
         n_classes_train = len(np.unique(y_train))
         n_classes_test = len(np.unique(y_test))
-    #         print('train:',len(y_train))
-    #         print('test:', len(y_test))
 
     print('Encoding succeeded.')
     return X_train, X_test, y_train, y_test
@@ -203,8 +203,8 @@ def main():
     pattern = 'fragments*.npy'
     seed = 42
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
-    grid_search_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/gridsearch-5000/results-5000-mlr.{}.csv'.format(
-        date_time)
+    data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
+    grid_search_file = data_dir + 'data/gridsearch-5000/results-5000-mlr.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
