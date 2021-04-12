@@ -56,7 +56,7 @@ def encode_fragments(output_dir, pattern, k, seed):
         print('Encoding failed')
 
         # split data into test and training
-        X_train, X_test, y_train, y_test = train_test_split(X_enc.toarray(), y_enc, test_size=0.33)
+        X_train, X_test, y_train, y_test = train_test_split(X_enc, y_enc, test_size=0.33)
         n_classes_train = len(np.unique(y_train))
         n_classes_test = len(np.unique(y_test))
     #         print('train:',len(y_train))
