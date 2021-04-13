@@ -16,7 +16,7 @@ def _set_weights(X):
     """
     Creates an array of weights with each element set to 0.
 
-    :param X: N x J matrix, where N is the number of samples and J is the number of features.
+    :param X: L x J matrix, where L is the number of samples and J is the number of features.
             Assumes X is augmented for w0 already.
     :return: J x 1 array
     """
@@ -31,10 +31,10 @@ def _add_x0(X):
     Todo - make this function work for a single sample
 
 
-    :param X: N x J matrix, where N is the number of samples and J is the number of features.
+    :param X: L x J matrix, where L is the number of samples and J is the number of features.
             Assumes X is not augmented for w0 yet.
 
-    :return: N x (J+1) matrix
+    :return: L x (J+1) matrix
     """
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     rows = X_sparse.shape[0]
@@ -73,7 +73,7 @@ class LogisticRegression:
         """
         Estimates the feature weights using the data.
 
-        :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in a sample
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
         :param y: L x 1 matrix, labels for each sample
         :return:
         """
@@ -100,7 +100,7 @@ class LogisticRegression:
         """
         Get predicted label for each sample.
 
-        :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in a sample
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
         :return: L x 1 vector
         """
         # append imaginary column X_0=1 to accommodate w_0
@@ -122,7 +122,7 @@ class LogisticRegression:
         Get probability estimates for classes. Estimates for all classes are ordered by class label
         (i.e. [0.2,0.8] indicates 20% probability of class 0, 80% probability of class 1).
 
-        :param X: L x n matrix, where L is the number of samples and n is the number of features
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
         :return: L x C vector, where C is the number of classes
         """
         # append imaginary column X_0=1 to accommodate w_0

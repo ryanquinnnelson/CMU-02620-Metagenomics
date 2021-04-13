@@ -198,10 +198,10 @@ def _update_weights(w, eta, gradient):
     """
     Updates regression coefficients using the following formula: W <- W + (eta * gradient)
 
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
-    :param gradient: n x 1 array
-    :return: n x 1 array, updated weights
+    :param gradient: J x 1 array
+    :return: J x 1 array, updated weights
     """
     change = eta * gradient
     w_updated = w + change
@@ -214,11 +214,11 @@ def _update_weights_l2(w, eta, gradient, l2_lambda):
     Updates regression coefficients using the following formula:
     W <- W - (eta * l1_lambda * W) + (eta * gradient)
 
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
-    :param gradient: n x 1 array
+    :param gradient: J x 1 array
     :param l2_lambda: float, lambda value to use for l2 penalty
-    :return: n x 1 array, updated weights
+    :return: J x 1 array, updated weights
     """
     regularization_term = eta * l2_lambda * w
     w_updated = w - regularization_term + (eta * gradient)
@@ -228,10 +228,10 @@ def _update_weights_l2(w, eta, gradient, l2_lambda):
 # tested, sparse-enabled
 def _calc_inner(X, w):
     """
-    Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 for explanation of function logic.
+    Performs the inner calculation w_0 + SUM_j w_i X_j^L. See Note 1 for explanation of function logic.
 
-    :param X:  L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param X:  L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: L x 1 array
     """
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
@@ -248,9 +248,9 @@ def get_y_predictions(X, w):
     P(Y^L=1|x,w) = exp(A) / 1 + exp(A)
 
     where
-    - i is the ith feature
+    - j is the jth feature
     - L is the number of samples
-    - A = w_0 + SUM_i (w_i X_i^L)
+    - A = w_0 + SUM_j (w_j X_j^L)
 
     Todo - Figure out whether RuntimeWarning that occurs periodically is a bug or a data issue.
     gradient_descent.py:316: RuntimeWarning: overflow encountered in exp
@@ -260,8 +260,8 @@ def get_y_predictions(X, w):
     gradient_descent.py:267: RuntimeWarning: invalid value encountered in true_divide
     return top / bottom
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return:  L x 1 array
     """
     num_rows = X.shape[0]
@@ -279,10 +279,10 @@ def _calc_gradient(X, y_true, y_pred):
     """
     Calculates the gradient. See Note 2 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
     :param y_true: L x 1 array
     :param y_pred: L x 1 array
-    :return: n x 1 array, gradient
+    :return: J x 1 array, gradient
     """
     y_err = y_true - y_pred
     y_err_sparse = csr_matrix(y_err)  # convert to sparse matrix for efficient matrix multiplication
@@ -294,12 +294,12 @@ def _calc_gradient(X, y_true, y_pred):
 # tested, sparse-enabled
 def _calc_left_half_log_likelihood(X, y_true, w):
     """
-    Calculates the YA sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
+    Calculates the YA sum used in log likelihood, where A = w_0 + SUM_j^n w_j X_j^L.
     See Note 3 for details.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
     :param y_true: L x 1 array
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
     Xw = _calc_inner(X, w)
@@ -309,13 +309,13 @@ def _calc_left_half_log_likelihood(X, y_true, w):
 # tested, sparse-enabled
 def _calc_right_half_log_likelihood(X, w):
     """
-    Calculates the ln(1 + exp(A)) sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
+    Calculates the ln(1 + exp(A)) sum used in log likelihood, where A = w_0 + SUM_j^n w_j X_j^L.
     See Note 3 for details.
 
     Todo - Most of this is a copy of get_y_predictions(). Move redundant code to separate function.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
     num_rows = X.shape[0]
@@ -335,9 +335,9 @@ def _calc_log_likelihood(X, y_true, w):
     """
     Calculates log likelihood. See Note 3 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
     :param y_true: L x 1 array
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
     # left half of expression
@@ -353,16 +353,16 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     """
     Performs gradient descent to derive optimal regression coefficients.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
     :param y_true: L x 1 array
-    :param w: n x 1 array, where n is the number of dimensions in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
     :param epsilon: float, convergence threshold
     :param penalty: str, penalty type to use. Default is None. Current implementation allows 'l2'.
     :param l2_lambda: float, value of l2 penalty if that penalty is used. Default is 0.
     :param max_iter: int, number of iterations allowed during convergence. Exceeding this number stops the algorithm
             and returns the current weights at that point. Default is 100.
-    :return: n x 1 array, weight of each feature at convergence, including the intercept
+    :return: J x 1 array, weight of each feature at convergence, including the intercept
     """
     # set initial weights
     weights = w

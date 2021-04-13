@@ -170,3 +170,4 @@ experiment,category,classifier,training shape,sample_length,coverage,k,eta,epsil
 16.05,multiclass,Logistic Regression,"(61353, 800)",200,400,1,0.1,0.01,,0,200,0.2625831430556934,species_recall
 16.05,multiclass,Logistic Regression,"(61353, 1600)",200,400,2,0.1,0.01,,0,200,0.26218604189417255,species_recall
 16.05,multiclass,Logistic Regression,"(61353, 12800)",200,400,4,0.1,0.01,,0,200,0.25037228233892583,species_recall
+16.05,multiclass,Logistic Regression,"(61353, 132434)",200,400,6,0.1,0.01,,0,200,0.33789999669082366,species_recall
