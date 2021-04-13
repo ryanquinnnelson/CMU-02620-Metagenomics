@@ -164,17 +164,17 @@ def main():
               'solver',
               'score',
               'score type']
-    experiment = '17.01'
+    experiment = '17.02'
     score_type = 'species_recall'
 
     # combinations to try
     list_sample_length = [100, 200, 400] * 5
     list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
-    list_penalty = ['l1']
+    list_penalty = ['l2']
     list_multiclass = ['auto']
     list_classweight = [None]
-    list_solver = ['saga']  # lbfgs
+    list_solver = ['lbfgs']
 
     grid_search_multiclass_lr(seq_file,
                               taxid_file,
