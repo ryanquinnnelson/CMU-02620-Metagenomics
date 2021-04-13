@@ -131,7 +131,7 @@ def grid_search_multiclass_lr(seq_file,
             # output results to file
             row = [experiment, 'multiclass', 'Logistic Regression (sklearn)', X_train.shape, sample_length, coverage, k,
                    penalty, multiclass, classweight, solver, score, score_type]
-            append_results_to_file(grid_search_file, rows=row)
+            append_results_to_file(grid_search_file, rows=[row])
 
         print('Percent complete: {}'.format(count / n_combinations * 100))  # display progress
 
@@ -164,7 +164,7 @@ def main():
               'solver',
               'score',
               'score type']
-    experiment = '7.04'
+    experiment = '17.01'
     score_type = 'species_recall'
 
     # combinations to try
