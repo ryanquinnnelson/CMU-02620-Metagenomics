@@ -230,7 +230,7 @@ def _calc_inner(X, w):
     """
     Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 for explanation of function logic.
 
-    :param X:  L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X:  L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return: L x 1 array
     """
@@ -260,7 +260,7 @@ def get_y_predictions(X, w):
     gradient_descent.py:267: RuntimeWarning: invalid value encountered in true_divide
     return top / bottom
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return:  L x 1 array
     """
@@ -279,7 +279,7 @@ def _calc_gradient(X, y_true, y_pred):
     """
     Calculates the gradient. See Note 2 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param y_true: L x 1 array
     :param y_pred: L x 1 array
     :return: n x 1 array, gradient
@@ -297,7 +297,7 @@ def _calc_left_half_log_likelihood(X, y_true, w):
     Calculates the YA sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
     See Note 3 for details.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param y_true: L x 1 array
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return: scalar
@@ -314,7 +314,7 @@ def _calc_right_half_log_likelihood(X, w):
 
     Todo - Most of this is a copy of get_y_predictions(). Move redundant code to separate function.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return: scalar
     """
@@ -335,7 +335,7 @@ def _calc_log_likelihood(X, y_true, w):
     """
     Calculates log likelihood. See Note 3 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param y_true: L x 1 array
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return: scalar
@@ -353,7 +353,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     """
     Performs gradient descent to derive optimal regression coefficients.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimensions in an augmented sample
     :param y_true: L x 1 array
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :param eta: float, learning rate
