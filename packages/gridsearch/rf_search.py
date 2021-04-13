@@ -95,6 +95,11 @@ def grid_search_multiclass_rf(seq_file,
 
 
 def main():
+    """
+    Todo - change hardcoded parameters into parameters than can be supplied to method at command line
+
+    :return:
+    """
     # parameters
     seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.fasta'
     taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-5000.taxid'
