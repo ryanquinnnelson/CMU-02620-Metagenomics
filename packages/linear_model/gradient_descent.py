@@ -372,7 +372,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
 
     # perform gradient descent
     count = 0
-    diff = epsilon  # dummy value to start loop
+    diff = np.Inf  # dummy value to start loop
     while diff > epsilon:
 
         count += 1
