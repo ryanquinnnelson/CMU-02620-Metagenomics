@@ -1,6 +1,7 @@
 """
 Defines sampling functionality for metagenomics data.
 Fragments are stored as binary character arrays with each letter in the fragment sequence having its own column.
+Designed to work with encoding2.py.
 """
 import numpy as np
 from Bio import SeqIO
