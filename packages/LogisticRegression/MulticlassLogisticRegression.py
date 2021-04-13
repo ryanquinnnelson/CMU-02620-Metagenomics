@@ -159,6 +159,7 @@ class MulticlassLogisticRegression2:
     def predict(self, X):
         """
         Selects the class which has the highest probability for each sample.
+        Note: Maximum number of allowed classes is 127.
 
         :param X: Assumes X is not augmented.
         :return:
