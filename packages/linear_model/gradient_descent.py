@@ -325,8 +325,8 @@ def _calc_right_half_log_likelihood(X, w):
     top = np.exp(Xw_dense)
 
     ones = np.ones(num_rows)  # for each sample
-    inner = ones + top
-    ln_Xw = np.log(inner)
+    bottom = ones + top
+    ln_Xw = np.log(bottom)
     return np.sum(ln_Xw)  # sum over L samples
 
 
@@ -335,7 +335,7 @@ def _calc_log_likelihood(X, y_true, w):
     """
     Calculates log likelihood. See Note 3 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
     :param y_true: L x 1 array
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :return: scalar
@@ -353,7 +353,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     """
     Performs gradient descent to derive optimal regression coefficients.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
+    :param X: L x n matrix, where L is the number of samples and n is the number of dimension in an augmented sample
     :param y_true: L x 1 array
     :param w: n x 1 array, where n is the number of dimensions in an augmented sample
     :param eta: float, learning rate
@@ -361,8 +361,8 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     :param penalty: str, penalty type to use. Default is None. Current implementation allows 'l2'.
     :param l2_lambda: float, value of l2 penalty if that penalty is used. Default is 0.
     :param max_iter: int, number of iterations allowed during convergence. Exceeding this number stops the algorithm
-            and returns the current weights at that point.
-    :return: n x 1 array, weight of each feature at convergence.
+            and returns the current weights at that point. Default is 100.
+    :return: n x 1 array, weight of each feature at convergence, including the intercept
     """
     # set initial weights
     weights = w
@@ -372,7 +372,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
 
     # perform gradient descent
     count = 0
-    diff = np.Inf
+    diff = epsilon  # dummy value to start loop
     while diff > epsilon:
 
         count += 1
@@ -380,16 +380,17 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
             print('STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.')
             break  # stop descending
 
-        # update weights
+        # calculate gradient
         y_pred = get_y_predictions(X, weights)
         gradient = _calc_gradient(X, y_true, y_pred)
 
+        # update weights
         if penalty == 'l2':
             weights = _update_weights_l2(weights, eta, gradient, l2_lambda)
         else:
             weights = _update_weights(weights, eta, gradient)
 
-        # calculate difference
+        # calculate improvement
         log_likelihood = _calc_log_likelihood(X, y_true, weights)
         diff = np.abs(prev_log_likelihood - log_likelihood)
 
