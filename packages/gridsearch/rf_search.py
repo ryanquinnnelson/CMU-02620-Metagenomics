@@ -101,14 +101,14 @@ def main():
     :return:
     """
     # parameters
-    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-2000.fasta'
-    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-2000.taxid'
-    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-2000'
+    seq_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-3000.fasta'
+    taxid_file = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/train_small-db_toy-3000.taxid'
+    output_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/data/sampling/sampling-toy-3000'
     pattern = 'fragments*.npy'
     seed = None
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
     data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
-    grid_search_file = data_dir + 'data/gridsearch-2000/results-2000-rf.{}.csv'.format(date_time)
+    grid_search_file = data_dir + 'data/gridsearch-3000/results-3000-rf.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
@@ -121,7 +121,7 @@ def main():
               'score',
               'score type']
 
-    experiment = '11.02'
+    experiment = '11.04'
     score_type = 'species_recall'
 
     # combinations to try
