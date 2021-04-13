@@ -76,7 +76,7 @@ def _update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k):
     y_pred_proba_highest[idx] = y_pred_proba_k[idx]
 
 
-class MulticlassLogisticRegression2:
+class MulticlassLogisticRegression:
     """
     Implements multiclass logistic regression.
 
