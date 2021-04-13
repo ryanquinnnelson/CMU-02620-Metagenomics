@@ -3,7 +3,7 @@ from sklearn.metrics import recall_score
 
 from packages.gridsearch.helper import append_results_to_file, build_fragments, encode_fragments, \
     calc_number_combinations, parameter_generator
-from packages.LogisticRegression.MulticlassLogisticRegression import MulticlassLogisticRegression2
+from packages.linear_model.MulticlassLogisticRegression import MulticlassLogisticRegression
 
 
 def hyperparameter_generator(list_eta, list_epsilon, list_penalty, list_l2_lambda, list_max_iter):
@@ -39,11 +39,12 @@ def run_mlr_classification_recall(X_train, X_test, y_train, y_test, eta, epsilon
     :param max_iter:
     :return:
     """
-    mlr = MulticlassLogisticRegression2(eta=eta,
-                                        epsilon=epsilon,
-                                        penalty=penalty,
-                                        l2_lambda=l2_lambda,
-                                        max_iter=max_iter)
+    mlr = MulticlassLogisticRegression(eta=eta,
+                                       epsilon=epsilon,
+                                       penalty=penalty,
+                                       l2_lambda=l2_lambda,
+                                       max_iter=max_iter,
+                                       verbose=True)
     mlr.fit(X_train, y_train)
     y_pred = mlr.predict(X_test)
     score = recall_score(y_test, y_pred, average='weighted')

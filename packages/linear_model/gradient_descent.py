@@ -1,7 +1,8 @@
 """
 Implementation of gradient descent for Logistic Regression, as defined by Machine Learning (Mitchell).
-Assumes "imaginary" X_0 = 1 for all samples has been added to the matrix to accommodate w_0 (i.e. X has been augmented
-so that its first column is 1's).
+
+Assumes "imaginary" X_0 = 1 for all samples has been added to the matrix to accommodate w_0 efficiently in the
+ calculations. In other workds, assumes a column of ones has been added as the first column of X.
 """
 
 import numpy as np
@@ -195,13 +196,12 @@ l(W) = SUM_L [ Y^L * A ] - SUM_L [ ln( 1 + exp(A)) ]
 # tested, no need to be sparse
 def _update_weights(w, eta, gradient):
     """
-    Updates regression coefficients using the following formula:
-    W <- W + (eta * gradient)
+    Updates regression coefficients using the following formula: W <- W + (eta * gradient)
 
-    :param w: n x 1 vector
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
-    :param gradient: n x 1 vector
-    :return: updated weights
+    :param gradient: J x 1 array
+    :return: J x 1 array, updated weights
     """
     change = eta * gradient
     w_updated = w + change
@@ -209,18 +209,18 @@ def _update_weights(w, eta, gradient):
 
 
 # tested, no need to be sparse
-def _update_weights_l2(w, eta, gradient, l1_lambda):
+def _update_weights_l2(w, eta, gradient, l2_lambda):
     """
     Updates regression coefficients using the following formula:
     W <- W - (eta * l1_lambda * W) + (eta * gradient)
 
-    :param w: n x 1 vector
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
-    :param gradient: n x 1 vector
-    :param l1_lambda:
-    :return: updated weights
+    :param gradient: J x 1 array
+    :param l2_lambda: float, lambda value to use for l2 penalty
+    :return: J x 1 array, updated weights
     """
-    regularization_term = eta * l1_lambda * w
+    regularization_term = eta * l2_lambda * w
     w_updated = w - regularization_term + (eta * gradient)
     return w_updated
 
@@ -228,14 +228,12 @@ def _update_weights_l2(w, eta, gradient, l1_lambda):
 # tested, sparse-enabled
 def _calc_inner(X, w):
     """
-    Performs the inner calculation w_0 + SUM_i w_i X_i^L. See Note 1 for explanation of function logic.
+    Performs the inner calculation w_0 + SUM_j w_i X_j^L. See Note 1 for explanation of function logic.
 
-    :param X:  L x n matrix, where L is the number of samples and n is the number of features
-    :param w: n x 1 vector
-    :return: L x 1 vector
+    :param X:  L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
+    :return: L x 1 array
     """
-    # w_sparse = csr_matrix(w, dtype=np.float64)  #so that matrix product is also sparse
-    # return X @ w_sparse # matrix multiplication that works on sparse and dense matrices
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     w_sparse = csr_matrix(w)  # convert to sparse matrix for efficient matrix multiplication
     inner = w_sparse @ X_sparse.T
@@ -245,22 +243,31 @@ def _calc_inner(X, w):
 # tested, sparse-enabled
 def get_y_predictions(X, w):
     """
-    Obtains predicted labels for all L samples, using the following formula:
+    Obtains predicted probability labels for all L samples, using the following formula:
 
     P(Y^L=1|x,w) = exp(A) / 1 + exp(A)
-    where
-    - i is the ith feature
-    - L is the number of samples
-    - A = w_0 + SUM_i (w_i X_i^L)
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param w: n x 1 vector
-    :return:  L x 1 vector
+    where
+    - j is the jth feature
+    - L is the number of samples
+    - A = w_0 + SUM_j (w_j X_j^L)
+
+    Todo - Figure out whether RuntimeWarning that occurs periodically is a bug or a data issue.
+    gradient_descent.py:316: RuntimeWarning: overflow encountered in exp
+    inner = ones + np.exp(Xw_dense)
+    gradient_descent.py:264: RuntimeWarning: overflow encountered in exp
+    top = np.exp(Xw_dense)
+    gradient_descent.py:267: RuntimeWarning: invalid value encountered in true_divide
+    return top / bottom
+
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
+    :return:  L x 1 array
     """
     num_rows = X.shape[0]
 
     Xw = _calc_inner(X, w)
-    Xw_dense = Xw.toarray()[0]  # can be converted to dense matrix because Xw is a vector
+    Xw_dense = Xw.toarray()[0]  # can be converted to dense matrix because Xw is a array not a matrix
     top = np.exp(Xw_dense)
     ones = np.ones(num_rows)
     bottom = ones + top
@@ -272,27 +279,27 @@ def _calc_gradient(X, y_true, y_pred):
     """
     Calculates the gradient. See Note 2 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param y_true: L x 1 vector
-    :param y_pred: L x 1 vector
-    :return: Gradient in the form of an n x 1 vector
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param y_true: L x 1 array
+    :param y_pred: L x 1 array
+    :return: J x 1 array, gradient
     """
     y_err = y_true - y_pred
     y_err_sparse = csr_matrix(y_err)  # convert to sparse matrix for efficient matrix multiplication
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     grad_T = y_err_sparse @ X_sparse
-    return grad_T.toarray()[0]  # return np.matmul(X.T, y_err)
+    return grad_T.toarray()[0]
 
 
 # tested, sparse-enabled
 def _calc_left_half_log_likelihood(X, y_true, w):
     """
-    Calculates the YA sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
+    Calculates the YA sum used in log likelihood, where A = w_0 + SUM_j^n w_j X_j^L.
     See Note 3 for details.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param y_true: L x 1 vector
-    :param w: n x 1 vector
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param y_true: L x 1 array
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
     Xw = _calc_inner(X, w)
@@ -302,19 +309,24 @@ def _calc_left_half_log_likelihood(X, y_true, w):
 # tested, sparse-enabled
 def _calc_right_half_log_likelihood(X, w):
     """
-    Calculates the ln(1 + exp(A)) sum used in log likelihood, where A = w_0 + SUM_i^n w_i X_i^L.
+    Calculates the ln(1 + exp(A)) sum used in log likelihood, where A = w_0 + SUM_j^n w_j X_j^L.
     See Note 3 for details.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param w: n x 1 vector
+    Todo - Most of this is a copy of get_y_predictions(). Move redundant code to separate function.
+
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
+    num_rows = X.shape[0]
+
     Xw = _calc_inner(X, w)
     Xw_dense = Xw.toarray()[0]  # can be converted to dense matrix because Xw is a vector
-    num_rows = X.shape[0]
+    top = np.exp(Xw_dense)
+
     ones = np.ones(num_rows)  # for each sample
-    inner = ones + np.exp(Xw_dense)
-    ln_Xw = np.log(inner)
+    bottom = ones + top
+    ln_Xw = np.log(bottom)
     return np.sum(ln_Xw)  # sum over L samples
 
 
@@ -323,9 +335,9 @@ def _calc_log_likelihood(X, y_true, w):
     """
     Calculates log likelihood. See Note 3 for explanation of function logic.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param y_true: L x 1 vector
-    :param w: n x 1 vector
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param y_true: L x 1 array
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :return: scalar
     """
     # left half of expression
@@ -341,16 +353,16 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
     """
     Performs gradient descent to derive optimal regression coefficients.
 
-    :param X: L x n matrix, where L is the number of samples and n is the number of features
-    :param y_true: L x 1 vector
-    :param w: n x 1 vector
+    :param X: L x J matrix, where L is the number of samples and J is the number of features in an augmented sample
+    :param y_true: L x 1 array
+    :param w: J x 1 array, where J is the number of features in an augmented sample
     :param eta: float, learning rate
     :param epsilon: float, convergence threshold
     :param penalty: str, penalty type to use. Default is None. Current implementation allows 'l2'.
     :param l2_lambda: float, value of l2 penalty if that penalty is used. Default is 0.
     :param max_iter: int, number of iterations allowed during convergence. Exceeding this number stops the algorithm
-            and returns the current weights at that point.
-    :return: n x 1 vector, weight of each feature at convergence.
+            and returns the current weights at that point. Default is 100.
+    :return: J x 1 array, weight of each feature at convergence, including the intercept
     """
     # set initial weights
     weights = w
@@ -360,7 +372,7 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
 
     # perform gradient descent
     count = 0
-    diff = np.Inf
+    diff = np.Inf  # dummy value to start loop
     while diff > epsilon:
 
         count += 1
@@ -368,21 +380,21 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
             print('STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.')
             break  # stop descending
 
-        # update weights
+        # calculate gradient
         y_pred = get_y_predictions(X, weights)
         gradient = _calc_gradient(X, y_true, y_pred)
 
+        # update weights
         if penalty == 'l2':
             weights = _update_weights_l2(weights, eta, gradient, l2_lambda)
         else:
             weights = _update_weights(weights, eta, gradient)
 
-        # calculate difference
+        # calculate improvement
         log_likelihood = _calc_log_likelihood(X, y_true, weights)
         diff = np.abs(prev_log_likelihood - log_likelihood)
 
         # save log likelihood for next round
         prev_log_likelihood = log_likelihood
 
-    # print('count of rounds', count)
     return weights

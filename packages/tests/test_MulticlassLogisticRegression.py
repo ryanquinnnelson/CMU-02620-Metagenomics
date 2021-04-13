@@ -1,4 +1,4 @@
-from packages.LogisticRegression import MulticlassLogisticRegression as mlr
+from packages.linear_model import MulticlassLogisticRegression as mlr
 import numpy as np
 from scipy.sparse import csr_matrix
 
@@ -75,7 +75,7 @@ def test__update_predictions():
 def test__init__v2():
     eta = 1
     epsilon = 2
-    model = mlr.MulticlassLogisticRegression2(eta, epsilon)
+    model = mlr.MulticlassLogisticRegression(eta, epsilon)
     assert model.eta == eta
     assert model.epsilon == epsilon
     assert model.classifiers is None
@@ -94,7 +94,7 @@ def test_fit__v2():
                   [3, 10.5],
                   [3, 11]])
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
     assert len(model.classifiers) == 3
 
@@ -112,7 +112,7 @@ def test_fit__v2__sparse():
                              [3, 10.5],
                              [3, 11]]))
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
     assert len(model.classifiers) == 3
 
@@ -130,7 +130,7 @@ def test_predict_proba_v2():
                   [3, 10.5],
                   [3, 11]])
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
 
     X_test = np.array([[0, 1],
@@ -162,7 +162,7 @@ def test_predict_proba_v2__sparse():
                              [3, 10.5],
                              [3, 11]]))
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
 
     X_test = csr_matrix(np.array([[0, 1],
@@ -194,7 +194,7 @@ def test_predict_v2():
                   [3, 10.5],
                   [3, 11]])
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
 
     X_test = np.array([[0, 1],
@@ -220,7 +220,7 @@ def test_predict_v2__sparse():
                              [3, 10.5],
                              [3, 11]]))
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
-    model = mlr.MulticlassLogisticRegression2(eta=0.01, epsilon=0.01)
+    model = mlr.MulticlassLogisticRegression(eta=0.01, epsilon=0.01)
     model.fit(X, y)
 
     X_test = csr_matrix(np.array([[0, 1],
@@ -248,10 +248,10 @@ def test_predict_v2__l2_penalty():
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
     penalty = 'l2'
     penalty_lambda = 0.1
-    model = mlr.MulticlassLogisticRegression2(eta=0.01,
-                                              epsilon=0.01,
-                                              penalty=penalty,
-                                              l2_lambda=penalty_lambda)
+    model = mlr.MulticlassLogisticRegression(eta=0.01,
+                                             epsilon=0.01,
+                                             penalty=penalty,
+                                             l2_lambda=penalty_lambda)
     model.fit(X, y)
 
     X_test = np.array([[0, 1],
@@ -279,10 +279,10 @@ def test_predict_v2__l2_penalty__sparse():
     y = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2])
     penalty = 'l2'
     penalty_lambda = 0.1
-    model = mlr.MulticlassLogisticRegression2(eta=0.01,
-                                              epsilon=0.01,
-                                              penalty=penalty,
-                                              l2_lambda=penalty_lambda)
+    model = mlr.MulticlassLogisticRegression(eta=0.01,
+                                             epsilon=0.01,
+                                             penalty=penalty,
+                                             l2_lambda=penalty_lambda)
     model.fit(X, y)
 
     X_test = csr_matrix(np.array([[0, 1],
