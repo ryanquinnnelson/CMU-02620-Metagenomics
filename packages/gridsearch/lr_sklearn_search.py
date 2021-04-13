@@ -164,7 +164,7 @@ def main():
               'solver',
               'score',
               'score type']
-    experiment = '17.02'
+    experiment = '17.03'
     score_type = 'species_recall'
 
     # combinations to try
@@ -173,7 +173,7 @@ def main():
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_penalty = ['l2']
     list_multiclass = ['auto']
-    list_classweight = [None]
+    list_classweight = ['balanced']
     list_solver = ['lbfgs']
 
     grid_search_multiclass_lr(seq_file,
