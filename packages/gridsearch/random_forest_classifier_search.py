@@ -103,7 +103,7 @@ def main():
     seed = 42
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
     data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
-    grid_search_file = 'data/gridsearch-5000/results-5000-rf.{}.csv'.format(date_time)
+    grid_search_file = data_dir + 'data/gridsearch-5000/results-5000-rf.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
