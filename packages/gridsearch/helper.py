@@ -11,6 +11,13 @@ from packages.metagenomics import sampling2, encoding2
 
 
 def append_results_to_file(filename, fields=None, rows=None):
+    """
+
+    :param filename:
+    :param fields:
+    :param rows:
+    :return:
+    """
     with open(filename, 'a') as f:
 
         write = csv.writer(f)
@@ -23,6 +30,16 @@ def append_results_to_file(filename, fields=None, rows=None):
 
 
 def build_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, seed):
+    """
+
+    :param seq_file:
+    :param taxid_file:
+    :param output_dir:
+    :param sample_length:
+    :param coverage:
+    :param seed:
+    :return:
+    """
     # delete output directory if it previously exists
     try:
         shutil.rmtree(output_dir)
@@ -36,7 +53,12 @@ def build_fragments(seq_file, taxid_file, output_dir, sample_length, coverage, s
 
 def encode_fragments(output_dir, pattern, k, seed=None):
     """
-    Converts sparse matrix to array before splitting.
+
+    :param output_dir:
+    :param pattern:
+    :param k:
+    :param seed:
+    :return:
     """
 
     # encode data
@@ -75,6 +97,11 @@ def encode_fragments(output_dir, pattern, k, seed=None):
 
 
 def calc_number_combinations(*args):
+    """
+
+    :param args:
+    :return:
+    """
     total = 1
     for each in args:
         total *= len(each)
@@ -82,6 +109,13 @@ def calc_number_combinations(*args):
 
 
 def parameter_generator(list_sample_length, list_coverage, list_k):
+    """
+
+    :param list_sample_length:
+    :param list_coverage:
+    :param list_k:
+    :return:
+    """
     for L in list_sample_length:
         for c in list_coverage:
             for k in list_k:
@@ -92,6 +126,9 @@ def calc_hyperparameter_relationship(filename):
     """
     Runs logistic regression over hyperparameters to find the regression coefficients.
     This should give some indicator of how hyperparameters are affecting the score.
+
+    :param filename:
+    :return:
     """
     # read in grid search results
     df = pd.read_csv(filename)
