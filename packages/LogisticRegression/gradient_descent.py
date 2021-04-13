@@ -234,8 +234,6 @@ def _calc_inner(X, w):
     :param w: n x 1 vector
     :return: L x 1 vector
     """
-    # w_sparse = csr_matrix(w, dtype=np.float64)  #so that matrix product is also sparse
-    # return X @ w_sparse # matrix multiplication that works on sparse and dense matrices
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     w_sparse = csr_matrix(w)  # convert to sparse matrix for efficient matrix multiplication
     inner = w_sparse @ X_sparse.T
@@ -281,7 +279,7 @@ def _calc_gradient(X, y_true, y_pred):
     y_err_sparse = csr_matrix(y_err)  # convert to sparse matrix for efficient matrix multiplication
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     grad_T = y_err_sparse @ X_sparse
-    return grad_T.toarray()[0]  # return np.matmul(X.T, y_err)
+    return grad_T.toarray()[0]
 
 
 # tested, sparse-enabled
@@ -384,5 +382,4 @@ def gradient_descent(X, y_true, w, eta, epsilon, penalty=None, l2_lambda=0, max_
         # save log likelihood for next round
         prev_log_likelihood = log_likelihood
 
-    # print('count of rounds', count)
     return weights

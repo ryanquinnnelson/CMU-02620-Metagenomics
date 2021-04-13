@@ -23,6 +23,7 @@ def _add_x0(X):
     Adds a column to the left of matrix X with each element set to 1.
     Todo - make this function work for a single sample
 
+
     :param X: N x J matrix, where N is the number of samples and J is the number of features.
             Assumes X is not augmented for w0 yet.
 
@@ -31,7 +32,8 @@ def _add_x0(X):
     X_sparse = csr_matrix(X)  # convert to sparse matrix if not already sparse
     rows = X_sparse.shape[0]
     ones = np.ones(rows)
-    # X_aug = np.insert(X, 0, ones, axis=1)
+
+    # source: https://stackoverflow.com/questions/41937786/add-column-to-a-sparse-matrix
     X_aug = hstack((ones[:, None], X_sparse))
     return X_aug
 
