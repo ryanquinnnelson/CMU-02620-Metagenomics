@@ -89,7 +89,7 @@ def grid_search_multiclass_rf(seq_file,
             # output results to file
             row = [experiment, 'multiclass', 'Random Forest', X_train.shape, sample_length, coverage, k,
                    max_depth, n_estimators, score, score_type]
-            append_results_to_file(grid_search_file, rows=row)
+            append_results_to_file(grid_search_file, rows=[row])
 
         print('Percent complete: {}'.format(count / n_combinations * 100))  # display progress
 
@@ -126,7 +126,7 @@ def main():
 
     # combinations to try
     list_sample_length = [100, 200, 400] * 5
-    list_coverage = [0.1, 1, 10, 100, 200, 400]
+    list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_max_depth = [30]
     list_n_estimators = [50]
