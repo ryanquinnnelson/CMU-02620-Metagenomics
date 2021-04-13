@@ -1,5 +1,5 @@
 import numpy as np
-import packages.LogisticRegression.gradient_descent as gd
+import packages.linear_model.gradient_descent as gd
 from scipy.sparse import csr_matrix
 from scipy.sparse import hstack
 

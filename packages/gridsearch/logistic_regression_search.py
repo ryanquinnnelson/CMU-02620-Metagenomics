@@ -3,7 +3,7 @@ from sklearn.metrics import recall_score
 
 from packages.gridsearch.helper import append_results_to_file, build_fragments, encode_fragments, \
     calc_number_combinations, parameter_generator
-from packages.LogisticRegression.MulticlassLogisticRegression import MulticlassLogisticRegression2
+from packages.linear_model.MulticlassLogisticRegression import MulticlassLogisticRegression2
 
 
 def hyperparameter_generator(list_eta, list_epsilon, list_penalty, list_l2_lambda, list_max_iter):

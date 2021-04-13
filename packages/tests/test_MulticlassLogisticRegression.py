@@ -1,4 +1,4 @@
-from packages.LogisticRegression import MulticlassLogisticRegression as mlr
+from packages.linear_model import MulticlassLogisticRegression as mlr
 import numpy as np
 from scipy.sparse import csr_matrix
 

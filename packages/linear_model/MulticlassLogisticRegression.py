@@ -6,7 +6,7 @@ One-vs-all is a strategy that involves training N distinct binary classifiers,
  We augment the data for predictions to accommodate w0 in the calculations. We don't augmented the data for fitting the
  model because logistic regression already augments the data.
 """
-from packages.LogisticRegression.LogisticRegression import LogisticRegression
+from packages.linear_model.LogisticRegression import LogisticRegression
 import numpy as np
 import copy
 
