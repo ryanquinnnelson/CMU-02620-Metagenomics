@@ -18,7 +18,7 @@ def _calculate_number_classes(y):
     """
     Determines the number of classes among the labels.
 
-    :param y: n x 1 array, where n is the number of samples. Represents labels matching to samples.
+    :param y: L x 1 array, where L is the number of samples.
     :return: int, number of classes
     """
     return len(np.unique(y))
@@ -29,9 +29,9 @@ def _convert_to_binary_classes(y, label):
     """
     Changes labels of samples with class=label to one and labels of all other samples to zero.
 
-    :param y: n x 1 array, where n is the number of samples. Represents labels matching to samples.
+    :param y: L x 1 array, where L is the number of samples.
     :param label: int, represents label of the class to be defined with ones.
-    :return: n x 1 array of binary values
+    :return: L x 1 array of binary values
     """
     y_binary = copy.deepcopy(y)  # avoid modifying original array
     y_binary[y == label] = 1  # set class which remains as 1
@@ -42,9 +42,10 @@ def _convert_to_binary_classes(y, label):
 # tested
 def _standardize_probabilities(y_pred_proba):
     """
+    Divides probabilities for a given sample by the total of all probabilities so that total sums to 1.0.
 
-    :param y_pred_proba:
-    :return:
+    :param y_pred_proba: L x K array, where L is the number of samples and K is the number of classes.
+    :return: L x K array
     """
 
     sums = np.sum(y_pred_proba, axis=1).reshape(-1, 1)
@@ -54,16 +55,18 @@ def _standardize_probabilities(y_pred_proba):
 
 def _update_predictions(y_pred, y_pred_proba_highest, y_pred_proba_k, k):
     """
-    Updates label predictions by comparing current highest probabilities for each sample
-    with the predicted probabilities for the kth class.
+    Efficiently updates label predictions by comparing current highest probabilities for each sample
+    with the predicted probabilities for the kth class. Sets the predicted class to be k for samples where the kth
+    class has a higher probability than the current highest probability.
 
     Updates highest probabilities for any samples if kth class prediction probabilities are higher.
 
-    :param y_pred:
-    :param y_pred_proba_highest:
-    :param y_pred_proba_k:
-    :param k:
-    :return:
+    :param y_pred: L x 1 array, where L is the number of samples. Represents current class predictions for samples.
+    :param y_pred_proba_highest: L x 1 array. Contains the highest probability found so far for each sample from
+                                among the classes.
+    :param y_pred_proba_k: L x 1 array. Contains prediction probabilities for the kth class.
+    :param k: int, the kth class.
+    :return: None
     """
     # determine if any probabilities for kth class are higher than the current highest probabilities
     diff = y_pred_proba_k - y_pred_proba_highest
@@ -87,14 +90,17 @@ class MulticlassLogisticRegression:
     """
 
     # tested
-    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100):
+    def __init__(self, eta, epsilon, penalty=None, l2_lambda=0, max_iter=100, verbose=False):
         """
+        Initializes an instance.
 
-        :param eta:
-        :param epsilon:
-        :param penalty:
-        :param l2_lambda:
-        :param max_iter:
+        :param eta: float, learning rate
+        :param epsilon: float, convergence threshold
+        :param penalty: str, penalty type to use. Default is None. Current implementation allows 'l2'.
+        :param l2_lambda: float, value of l2 penalty if that penalty is used. Default is 0.
+        :param max_iter: int, number of iterations allowed during convergence. Exceeding this number stops the algorithm
+                and returns the current weights at that point. Default is 100.
+        :param verbose: boolean, print progress updates to the console if True. Default is False.
         """
         self.eta = eta
         self.epsilon = epsilon
@@ -102,23 +108,30 @@ class MulticlassLogisticRegression:
         self.penalty = penalty
         self.l2_lambda = l2_lambda
         self.max_iter = max_iter
+        self.verbose = verbose
 
     # tested, sparse-enabled
     def fit(self, X, y):
         """
-        Todo - add ability to turn off verbose printing.
+        Estimates the feature weights using the data.
 
-        :param X: Assumes X is not augmented.
-        :param y:
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
+        :param y: L x 1 array, class labels for each sample
         :return:
         """
         # determine how many binary classifiers must be trained
         n_classifiers = _calculate_number_classes(y)
-        print('n_classifiers', n_classifiers)
+        if self.verbose:
+            print('n_classifiers', n_classifiers)
+
         # train binary classifier for each class
         classifiers = []
-        for i in range(n_classifiers):
-            print('training classifier {}'.format(i))
+        for k in range(n_classifiers):
+            if self.verbose:
+                print('training classifier {}'.format(k))
+
+            # train classifier for kth class
             lr = LogisticRegression(eta=self.eta,
                                     epsilon=self.epsilon,
                                     penalty=self.penalty,
@@ -126,15 +139,17 @@ class MulticlassLogisticRegression:
                                     max_iter=self.max_iter)
 
             # convert to binary classes
-            y_binary = _convert_to_binary_classes(y, i)
+            y_binary = _convert_to_binary_classes(y, k)
 
             # fit binary classifier
             lr.fit(X, y_binary)
 
-            # retain weights for this classifier
+            # retain classifier for predictions
             classifiers.append(lr)
 
+        # save to instance
         self.classifiers = classifiers
+
         return self
 
     # tested, sparse-enabled
@@ -142,8 +157,9 @@ class MulticlassLogisticRegression:
         """
         Calculates probabilities for each class for each sample.
 
-        :param X: Assumes X is not augmented.
-        :return: N x K matrix
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
+        :return: L x K matrix, where K is the number of classes.
         """
         K = len(self.classifiers)
         N = X.shape[0]
@@ -160,11 +176,12 @@ class MulticlassLogisticRegression:
     # tested, sparse-enabled
     def predict(self, X):
         """
-        Selects the class which has the highest probability for each sample.
+        Predicts the class which has the highest probability for each sample.
         Note: Maximum number of allowed classes is 127.
 
-        :param X: Assumes X is not augmented.
-        :return:
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
+        :return: L x 1 array
         """
         N = X.shape[0]
         y_pred_proba_highest = np.zeros((N,))  # contains highest probabilities for each sample so far

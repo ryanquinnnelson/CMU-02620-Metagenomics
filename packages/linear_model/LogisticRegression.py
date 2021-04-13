@@ -73,7 +73,8 @@ class LogisticRegression:
         """
         Estimates the feature weights using the data.
 
-        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
         :param y: L x 1 matrix, labels for each sample
         :return:
         """
@@ -100,7 +101,8 @@ class LogisticRegression:
         """
         Get predicted label for each sample.
 
-        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
         :return: L x 1 vector
         """
         # append imaginary column X_0=1 to accommodate w_0
@@ -122,7 +124,8 @@ class LogisticRegression:
         Get probability estimates for classes. Estimates for all classes are ordered by class label
         (i.e. [0.2,0.8] indicates 20% probability of class 0, 80% probability of class 1).
 
-        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample
+        :param X: L x J matrix, where L is the number of samples and J is the number of dimensions in a sample.
+                    Assumes X is not augmented.
         :return: L x C vector, where C is the number of classes
         """
         # append imaginary column X_0=1 to accommodate w_0

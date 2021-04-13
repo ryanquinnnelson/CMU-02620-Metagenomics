@@ -43,7 +43,8 @@ def run_mlr_classification_recall(X_train, X_test, y_train, y_test, eta, epsilon
                                        epsilon=epsilon,
                                        penalty=penalty,
                                        l2_lambda=l2_lambda,
-                                       max_iter=max_iter)
+                                       max_iter=max_iter,
+                                       verbose=True)
     mlr.fit(X_train, y_train)
     y_pred = mlr.predict(X_test)
     score = recall_score(y_test, y_pred, average='weighted')
