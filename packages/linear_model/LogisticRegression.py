@@ -1,3 +1,7 @@
+"""
+Implements Logistic Regression as defined by Machine Learning (Mitchell).
+"""
+
 import numpy as np
 import packages.linear_model.gradient_descent as gd
 from scipy.sparse import csr_matrix

@@ -1,10 +1,12 @@
 """
-One-vs-all is a strategy that involves training N distinct binary classifiers,
- each designed to recognize a specific class. After that we collectively use those N classifiers to predict
- the correct class.
+Implements Multiclass logistic regression using one-vs-all strategy.
 
- We augment the data for predictions to accommodate w0 in the calculations. We don't augmented the data for fitting the
- model because logistic regression already augments the data.
+One-vs-all involves training N distinct binary classifiers, each designed to recognize a specific class, then
+ collectively use those N classifiers to predict the correct class.
+
+ Implementation augments the data for predictions to accommodate w0 term in the calculations. Data is augmented by
+ adding a column of ones as the first column.  Note that data is not augmented for fitting the model because
+ LogisticRegression already augments the data for this.
 """
 from packages.linear_model.LogisticRegression import LogisticRegression
 import numpy as np
