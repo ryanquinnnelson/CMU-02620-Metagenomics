@@ -150,7 +150,7 @@ def main():
     seed = None
     data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
-    grid_search_file = data_dir + 'data/gridsearch-3000/results-3000-lrpackage-l2.{}.csv'.format(date_time)
+    grid_search_file = data_dir + 'data/gridsearch-3000/results-3000-lrpackage-l2-ovr-liblinear-fivefold.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
@@ -164,17 +164,17 @@ def main():
               'solver',
               'score',
               'score type']
-    experiment = '17.04'
+    experiment = '17.06'
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [100, 200, 400] * 4
+    list_sample_length = [100, 200, 400] * 5
     list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_penalty = ['l2']
-    list_multiclass = ['auto']
+    list_multiclass = ['ovr']
     list_classweight = [None]
-    list_solver = ['lbfgs']
+    list_solver = ['liblinear']
 
     grid_search_multiclass_lr(seq_file,
                               taxid_file,
