@@ -164,11 +164,11 @@ def main():
               'solver',
               'score',
               'score type']
-    experiment = '17.03'
+    experiment = '17.04'
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [100, 200, 400]
+    list_sample_length = [100, 200, 400] * 4
     list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_penalty = ['l2']
