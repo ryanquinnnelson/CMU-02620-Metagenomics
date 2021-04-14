@@ -1,0 +1,15 @@
+experiment,category,classifier,training shape,sample_length,coverage,k,penalty,multi_class,class_weight,solver,score,score type
+17.03,multiclass,Logistic Regression (sklearn),"(314, 400)",100,1,1,l2,auto,,lbfgs,0.23225806451612904,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 800)",100,1,2,l2,auto,,lbfgs,0.27741935483870966,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 4927)",100,1,4,l2,auto,,lbfgs,0.24516129032258063,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 6749)",100,1,6,l2,auto,,lbfgs,0.27741935483870966,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 5550)",100,1,8,l2,auto,,lbfgs,0.2645161290322581,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 4661)",100,1,10,l2,auto,,lbfgs,0.23870967741935484,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(314, 3736)",100,1,12,l2,auto,,lbfgs,0.3032258064516129,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 400)",100,10,1,l2,auto,,lbfgs,0.30297029702970296,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 800)",100,10,2,l2,auto,,lbfgs,0.31485148514851485,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 6398)",100,10,4,l2,auto,,lbfgs,0.38415841584158417,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 37045)",100,10,6,l2,auto,,lbfgs,0.34125412541254124,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 47962)",100,10,8,l2,auto,,lbfgs,0.31617161716171616,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 42862)",100,10,10,l2,auto,,lbfgs,0.3174917491749175,species_recall
+17.03,multiclass,Logistic Regression (sklearn),"(3073, 34513)",100,10,12,l2,auto,,lbfgs,0.32475247524752476,species_recall

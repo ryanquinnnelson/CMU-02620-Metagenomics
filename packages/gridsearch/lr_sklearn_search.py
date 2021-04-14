@@ -150,7 +150,7 @@ def main():
     seed = None
     data_dir = '/Users/ryanqnelson/GitHub/C-A-L-C-I-F-E-R/CMU-02620-Metagenomics/'
     date_time = datetime.datetime.now().strftime('%Y.%m.%d.%H.%M.%S')
-    grid_search_file = data_dir + 'data/gridsearch-3000/results-3000-lr-l2-balanced.{}.csv'.format(date_time)
+    grid_search_file = data_dir + 'data/gridsearch-3000/results-3000-lrpackage-l2.{}.csv'.format(date_time)
     fields = ['experiment',
               'category',
               'classifier',
@@ -173,7 +173,7 @@ def main():
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_penalty = ['l2']
     list_multiclass = ['auto']
-    list_classweight = ['balanced']
+    list_classweight = [None]
     list_solver = ['lbfgs']
 
     grid_search_multiclass_lr(seq_file,
