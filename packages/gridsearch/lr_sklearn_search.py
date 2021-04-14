@@ -168,7 +168,7 @@ def main():
     score_type = 'species_recall'
 
     # combinations to try
-    list_sample_length = [100, 200, 400] * 5
+    list_sample_length = [100, 200, 400]
     list_coverage = [1, 10, 100, 200, 400]
     list_k = [1, 2, 4, 6, 8, 10, 12]
     list_penalty = ['l2']
