@@ -1,8 +1,7 @@
 import datetime
-from sklearn.metrics import recall_score
 from packages.gridsearch.helper import append_results_to_file, build_fragments, encode_fragments,\
     calc_number_combinations, parameter_generator
-from packages.metagenomics.naive_bayes import run_naive_bayes
+from packages.generative_model.naive_bayes import run_naive_bayes
 
 def grid_search_NB(seq_file,
                     taxid_file,
