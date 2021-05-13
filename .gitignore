@@ -136,3 +136,4 @@ dmypy.json
 
 # test data
 data/sampling
+data/example
